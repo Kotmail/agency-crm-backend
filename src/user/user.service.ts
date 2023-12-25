@@ -74,15 +74,35 @@ export class UserService {
     return this.usersRepository.findOneBy({ id: Number(id) })
   }
 
-  findByEmail(email: string): Promise<User> {
-    return this.usersRepository.findOneBy({
-      email,
+  findByEmail(email: string, selectPassword: boolean = false): Promise<User> {
+    return this.usersRepository.findOne({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+        login: true,
+        email: true,
+        fullName: true,
+        role: true,
+        password: selectPassword,
+      },
     })
   }
 
-  findByLogin(login: string): Promise<User> {
-    return this.usersRepository.findOneBy({
-      login,
+  findByLogin(login: string, selectPassword: boolean = false): Promise<User> {
+    return this.usersRepository.findOne({
+      where: {
+        login,
+      },
+      select: {
+        id: true,
+        login: true,
+        email: true,
+        fullName: true,
+        role: true,
+        password: selectPassword,
+      },
     })
   }
 
