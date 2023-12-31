@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+import { Order } from 'src/order/order.entity'
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -29,4 +30,7 @@ export class User {
 
   @Column({ select: false })
   password: string
+
+  @OneToMany(() => Order, (order) => order.creator)
+  orders: Order[]
 }

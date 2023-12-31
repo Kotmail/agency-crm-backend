@@ -10,7 +10,7 @@ import { UpdateUserDto } from './update-user.dto'
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private userRepository: Repository<User>,
   ) {}
 
   async create(userDto: CreateUserDto): Promise<User> {
@@ -32,7 +32,7 @@ export class UserService {
       }
     }
 
-    return await this.usersRepository.save({
+    return await this.userRepository.save({
       ...userDto,
       password: await hash(userDto.password, 5),
     })
@@ -67,15 +67,15 @@ export class UserService {
     user.login = userDto.login || null
     user.fullName = userDto.fullName
 
-    return await this.usersRepository.save(user)
+    return await this.userRepository.save(user)
   }
 
   findById(id: string): Promise<User> {
-    return this.usersRepository.findOneBy({ id: Number(id) })
+    return this.userRepository.findOneBy({ id: Number(id) })
   }
 
   findByEmail(email: string, selectPassword: boolean = false): Promise<User> {
-    return this.usersRepository.findOne({
+    return this.userRepository.findOne({
       where: {
         email,
       },
@@ -91,7 +91,7 @@ export class UserService {
   }
 
   findByLogin(login: string, selectPassword: boolean = false): Promise<User> {
-    return this.usersRepository.findOne({
+    return this.userRepository.findOne({
       where: {
         login,
       },
@@ -107,10 +107,10 @@ export class UserService {
   }
 
   findAll(): Promise<User[]> {
-    return this.usersRepository.find()
+    return this.userRepository.find()
   }
 
   delete(id: string): Promise<DeleteResult> {
-    return this.usersRepository.delete(id)
+    return this.userRepository.delete(id)
   }
 }
