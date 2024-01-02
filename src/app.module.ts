@@ -8,6 +8,7 @@ import { User } from './user/user.entity'
 import { AuthModule } from './auth/auth.module'
 import { OrderModule } from './order/order.module'
 import { Order } from './order/order.entity'
+import { UserSubscriber } from './user/user-events.subscriber'
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { Order } from './order/order.entity'
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       entities: [User, Order],
+      subscribers: [UserSubscriber],
       synchronize: true,
     }),
     UserModule,

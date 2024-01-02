@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './user.entity'
-import { DeleteResult, Repository } from 'typeorm'
+import { DeleteResult, Not, Repository } from 'typeorm'
 import { CreateUserDto } from './create-user.dto'
 import { hash } from 'bcrypt'
 import { UpdateUserDto } from './update-user.dto'
@@ -32,42 +32,37 @@ export class UserService {
       }
     }
 
-    return await this.userRepository.save({
-      ...userDto,
-      password: await hash(userDto.password, 5),
-    })
+    return await this.userRepository.save(userDto)
   }
 
   async update(id: number, userDto: UpdateUserDto): Promise<User> {
-    const user = await this.findById(String(id))
+    if (userDto.email) {
+      const isEmailExists = await this.userRepository.findOneBy({
+        id: Not(id),
+        email: userDto.email,
+      })
 
-    const hasUserByEmail = await this.findByEmail(userDto.email)
-
-    if (hasUserByEmail && hasUserByEmail.id !== id) {
-      throw new BadRequestException('Указанный e-mail занят.')
+      if (isEmailExists) {
+        throw new BadRequestException('Указанный e-mail занят.')
+      }
     }
 
     if (userDto.login) {
-      const hasUserByLogin = await this.findByLogin(userDto.login)
+      const isLoginExists = await this.userRepository.findOneBy({
+        id: Not(id),
+        login: userDto.login,
+      })
 
-      if (hasUserByLogin && hasUserByLogin.id !== id) {
+      if (isLoginExists) {
         throw new BadRequestException('Указанный логин занят.')
       }
     }
 
-    if (userDto.password) {
-      user.password = await hash(userDto.password, 5)
+    if (Object.keys(userDto).length) {
+      await this.userRepository.update(id, userDto)
     }
 
-    if (userDto.role) {
-      user.role = userDto.role
-    }
-
-    user.email = userDto.email
-    user.login = userDto.login || null
-    user.fullName = userDto.fullName
-
-    return await this.userRepository.save(user)
+    return await this.userRepository.findOneBy({ id })
   }
 
   findById(id: string): Promise<User> {
