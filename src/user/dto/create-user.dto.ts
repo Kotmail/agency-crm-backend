@@ -4,8 +4,9 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsStrongPassword,
 } from 'class-validator'
-import { UserRole } from './user.entity'
+import { UserRole } from '../user.entity'
 
 export class CreateUserDto {
   @IsString()
@@ -23,6 +24,6 @@ export class CreateUserDto {
   @IsEnum(UserRole)
   role: UserRole
 
-  @IsNotEmpty()
+  @IsStrongPassword()
   password: string
 }

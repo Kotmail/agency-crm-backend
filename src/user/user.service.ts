@@ -2,9 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './user.entity'
 import { DeleteResult, Not, Repository } from 'typeorm'
-import { CreateUserDto } from './create-user.dto'
-import { hash } from 'bcrypt'
-import { UpdateUserDto } from './update-user.dto'
+import { CreateUserDto } from './dto/create-user.dto'
+import { UpdateUserDto } from './dto/update-user.dto'
 
 @Injectable()
 export class UserService {

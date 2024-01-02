@@ -9,10 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { OrderService } from './order.service'
-import { CreateOrderDto } from './create-order.dto'
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
-import { UpdateOrderDto } from './update-order.dto'
-import { CurrentUser } from 'src/auth/current-user.decorator'
+import { CreateOrderDto } from './dto/create-order.dto'
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
+import { UpdateOrderDto } from './dto/update-order.dto'
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator'
 import { User } from 'src/user/user.entity'
 
 @UseGuards(JwtAuthGuard)

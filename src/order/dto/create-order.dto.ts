@@ -5,8 +5,9 @@ import {
   IsDateString,
   IsOptional,
   IsNotEmpty,
+  IsBoolean,
 } from 'class-validator'
-import { OrderPriority, OrderStatus } from './order.entity'
+import { OrderPriority, OrderStatus } from '../order.entity'
 
 export class CreateOrderDto {
   @IsNotEmpty()
@@ -37,4 +38,8 @@ export class CreateOrderDto {
 
   @IsDateString()
   deadline: string
+
+  @IsOptional()
+  @IsBoolean()
+  isArchived: boolean
 }
