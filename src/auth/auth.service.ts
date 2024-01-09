@@ -15,6 +15,8 @@ export class AuthService {
     const user = await this.userService.findByEmail(email, true)
 
     if (user && (await compare(password, user.password))) {
+      delete user.password
+
       return user
     }
 
@@ -22,13 +24,9 @@ export class AuthService {
   }
 
   async login(user: User) {
-    const payload = {
-      id: user.id,
-      email: user.email,
-    }
-
     return {
-      access_token: this.jwtService.sign(payload),
+      user,
+      access_token: this.jwtService.sign({ id: user.id }),
     }
   }
 }
