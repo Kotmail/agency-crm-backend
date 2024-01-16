@@ -23,6 +23,10 @@ export class AuthService {
     return null
   }
 
+  async getUserByIdFromJwt(id: string) {
+    return await this.userService.findById(id)
+  }
+
   async login(user: User) {
     return {
       user,
