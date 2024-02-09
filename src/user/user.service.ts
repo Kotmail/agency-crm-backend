@@ -101,7 +101,11 @@ export class UserService {
   }
 
   findAll(): Promise<User[]> {
-    return this.userRepository.find()
+    return this.userRepository.find({
+      order: {
+        id: 'ASC',
+      },
+    })
   }
 
   delete(id: string): Promise<DeleteResult> {
