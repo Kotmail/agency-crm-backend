@@ -38,7 +38,7 @@ export class OrderService {
   findAll(): Promise<Order[]> {
     return this.orderRepository.find({
       order: {
-        id: 'ASC',
+        createdAt: 'DESC',
       },
     })
   }
