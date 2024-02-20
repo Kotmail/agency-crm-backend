@@ -1,4 +1,4 @@
-import { Order } from 'src/order/order.entity'
+import { Order } from 'src/orders/order.entity'
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
 
 export enum UserRole {

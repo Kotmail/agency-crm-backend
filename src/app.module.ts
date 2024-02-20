@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { UserModule } from './user/user.module'
+import { UsersModule } from './users/users.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule } from '@nestjs/config'
-import { User } from './user/user.entity'
+import { User } from './users/user.entity'
 import { AuthModule } from './auth/auth.module'
-import { OrderModule } from './order/order.module'
-import { Order } from './order/order.entity'
-import { UserSubscriber } from './user/user-events.subscriber'
+import { OrdersModule } from './orders/orders.module'
+import { Order } from './orders/order.entity'
+import { UserSubscriber } from './users/user.subscriber'
 
 @Module({
   imports: [
@@ -26,9 +26,9 @@ import { UserSubscriber } from './user/user-events.subscriber'
       subscribers: [UserSubscriber],
       synchronize: true,
     }),
-    UserModule,
     AuthModule,
-    OrderModule,
+    OrdersModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

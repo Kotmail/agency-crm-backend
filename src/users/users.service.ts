@@ -6,10 +6,10 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private usersRepository: Repository<User>,
   ) {}
 
   async create(userDto: CreateUserDto): Promise<User> {
@@ -31,12 +31,12 @@ export class UserService {
       }
     }
 
-    return await this.userRepository.save(userDto)
+    return await this.usersRepository.save(userDto)
   }
 
   async update(id: number, userDto: UpdateUserDto): Promise<User> {
     if (userDto.email) {
-      const isEmailExists = await this.userRepository.findOneBy({
+      const isEmailExists = await this.usersRepository.findOneBy({
         id: Not(id),
         email: userDto.email,
       })
@@ -47,7 +47,7 @@ export class UserService {
     }
 
     if (userDto.login) {
-      const isLoginExists = await this.userRepository.findOneBy({
+      const isLoginExists = await this.usersRepository.findOneBy({
         id: Not(id),
         login: userDto.login,
       })
@@ -58,18 +58,18 @@ export class UserService {
     }
 
     if (Object.keys(userDto).length) {
-      await this.userRepository.update(id, userDto)
+      await this.usersRepository.update(id, userDto)
     }
 
-    return await this.userRepository.findOneBy({ id })
+    return await this.usersRepository.findOneBy({ id })
   }
 
   findById(id: string): Promise<User> {
-    return this.userRepository.findOneBy({ id: Number(id) })
+    return this.usersRepository.findOneBy({ id: Number(id) })
   }
 
   findByEmail(email: string, selectPassword: boolean = false): Promise<User> {
-    return this.userRepository.findOne({
+    return this.usersRepository.findOne({
       where: {
         email,
       },
@@ -85,7 +85,7 @@ export class UserService {
   }
 
   findByLogin(login: string, selectPassword: boolean = false): Promise<User> {
-    return this.userRepository.findOne({
+    return this.usersRepository.findOne({
       where: {
         login,
       },
@@ -101,7 +101,7 @@ export class UserService {
   }
 
   findAll(): Promise<User[]> {
-    return this.userRepository.find({
+    return this.usersRepository.find({
       order: {
         id: 'ASC',
       },
@@ -109,6 +109,6 @@ export class UserService {
   }
 
   delete(id: string): Promise<DeleteResult> {
-    return this.userRepository.delete(id)
+    return this.usersRepository.delete(id)
   }
 }

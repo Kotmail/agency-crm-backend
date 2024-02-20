@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common'
-import { UserService } from 'src/user/user.service'
+import { UsersService } from 'src/users/users.service'
 import { compare } from 'bcrypt'
-import { User } from 'src/user/user.entity'
+import { User } from 'src/users/user.entity'
 import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
+    private readonly usersService: UsersService,
     private jwtService: JwtService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User> {
-    const user = await this.userService.findByEmail(email, true)
+    const user = await this.usersService.findByEmail(email, true)
 
     if (user && (await compare(password, user.password))) {
       delete user.password
@@ -24,13 +24,13 @@ export class AuthService {
   }
 
   async getUserByIdFromJwt(id: string) {
-    return await this.userService.findById(id)
+    return await this.usersService.findById(id)
   }
 
   async login(user: User) {
     return {
       user,
-      access_token: this.jwtService.sign({ id: user.id }),
+      access_token: this.jwtService.sign({ id: user.id, role: user.role }),
     }
   }
 }

@@ -8,40 +8,40 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common'
-import { OrderService } from './order.service'
+import { OrdersService } from './orders.service'
 import { CreateOrderDto } from './dto/create-order.dto'
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
 import { UpdateOrderDto } from './dto/update-order.dto'
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator'
-import { User } from 'src/user/user.entity'
+import { User } from 'src/users/user.entity'
 
 @UseGuards(JwtAuthGuard)
-@Controller('order')
-export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+@Controller('orders')
+export class OrdersController {
+  constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
   create(@CurrentUser() creator: User, @Body() orderDto: CreateOrderDto) {
-    return this.orderService.create(creator.id, orderDto)
+    return this.ordersService.create(creator.id, orderDto)
   }
 
   @Put(':id')
   update(@Param('id') id: string, @Body() orderDto: UpdateOrderDto) {
-    return this.orderService.update(id, orderDto)
+    return this.ordersService.update(id, orderDto)
   }
 
   @Get()
   getAll() {
-    return this.orderService.findAll()
+    return this.ordersService.findAll()
   }
 
   @Get(':id')
   getOne(@Param('id') id: string) {
-    return this.orderService.findById(id)
+    return this.ordersService.findById(id)
   }
 
   @Delete(':id')
   delete(@Param('id') id: string) {
-    return this.orderService.delete(id)
+    return this.ordersService.delete(id)
   }
 }
