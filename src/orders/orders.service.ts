@@ -36,12 +36,26 @@ export class OrdersService {
     return await this.ordersRepository.findOneBy({ id: orderId })
   }
 
-  findAll(): Promise<Order[]> {
-    return this.ordersRepository.find({
+  findAll(user: User): Promise<Order[]> {
+    const findOptions: FindManyOptions<Order> = {
       order: {
         createdAt: 'DESC',
       },
-    })
+    }
+
+    if (user.role !== UserRole.ADMIN) {
+      const { id } = user
+      const relationColumnName =
+        user.role === UserRole.MANAGER ? 'creator' : 'executor'
+
+      findOptions.where = {
+        [relationColumnName]: {
+          id,
+        },
+      }
+    }
+
+    return this.ordersRepository.find(findOptions)
   }
 
   findById(id: string): Promise<Order> {

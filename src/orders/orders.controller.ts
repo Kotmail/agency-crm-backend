@@ -31,8 +31,8 @@ export class OrdersController {
   }
 
   @Get()
-  getAll() {
-    return this.ordersService.findAll()
+  getAll(@CurrentUser() user: User) {
+    return this.ordersService.findAll(user)
   }
 
   @Get(':id')
