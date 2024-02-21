@@ -5,6 +5,7 @@ import { DeleteResult, FindManyOptions, Repository } from 'typeorm'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
 import { User, UserRole } from 'src/users/user.entity'
+import { QueryOrdersDto } from './dto/query-orders.dto'
 
 @Injectable()
 export class OrdersService {
@@ -36,8 +37,11 @@ export class OrdersService {
     return await this.ordersRepository.findOneBy({ id: orderId })
   }
 
-  findAll(user: User): Promise<Order[]> {
+  findAll(user: User, queryDto: QueryOrdersDto): Promise<Order[]> {
     const findOptions: FindManyOptions<Order> = {
+      where: {
+        isArchived: queryDto.state === 'closed' ? true : false,
+      },
       order: {
         createdAt: 'DESC',
       },

@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common'
 import { OrdersService } from './orders.service'
@@ -14,6 +15,7 @@ import { UpdateOrderDto } from './dto/update-order.dto'
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator'
 import { User } from 'src/users/user.entity'
+import { QueryOrdersDto } from './dto/query-orders.dto'
 
 @UseGuards(JwtAuthGuard)
 @Controller('orders')
@@ -31,8 +33,8 @@ export class OrdersController {
   }
 
   @Get()
-  getAll(@CurrentUser() user: User) {
-    return this.ordersService.findAll(user)
+  getAll(@CurrentUser() user: User, @Query() queryDto: QueryOrdersDto) {
+    return this.ordersService.findAll(user, queryDto)
   }
 
   @Get(':id')
