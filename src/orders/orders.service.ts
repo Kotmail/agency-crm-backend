@@ -52,10 +52,8 @@ export class OrdersService {
       const relationColumnName =
         user.role === UserRole.MANAGER ? 'creator' : 'executor'
 
-      findOptions.where = {
-        [relationColumnName]: {
-          id,
-        },
+      findOptions.where[relationColumnName] = {
+        id,
       }
     }
 
