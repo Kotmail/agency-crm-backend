@@ -16,6 +16,10 @@ export class CreateOrderDto {
 
   @IsNotEmpty()
   @IsString()
+  objectAddress: string
+
+  @IsNotEmpty()
+  @IsString()
   brand: string
 
   @IsNumber()

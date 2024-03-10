@@ -30,6 +30,12 @@ export class Order {
   })
   description: string
 
+  @Column({
+    type: 'text',
+    name: 'object_address',
+  })
+  objectAddress: string
+
   @Column()
   brand: string
 
