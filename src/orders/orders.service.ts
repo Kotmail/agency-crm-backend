@@ -37,7 +37,7 @@ export class OrdersService {
     return await this.ordersRepository.findOneBy({ id: orderId })
   }
 
-  findAll(user: User, queryDto: QueryOrdersDto): Promise<Order[]> {
+  findAll(user: User, queryDto: QueryOrdersDto): Promise<[Order[], number]> {
     const findOptions: FindManyOptions<Order> = {
       where: {
         isArchived: queryDto.state === 'closed' ? true : false,
@@ -45,6 +45,8 @@ export class OrdersService {
       order: {
         createdAt: 'DESC',
       },
+      take: queryDto.take,
+      skip: queryDto.skip,
     }
 
     if (user.role !== UserRole.ADMIN) {
@@ -57,7 +59,7 @@ export class OrdersService {
       }
     }
 
-    return this.ordersRepository.find(findOptions)
+    return this.ordersRepository.findAndCount(findOptions)
   }
 
   findById(id: string): Promise<Order> {
