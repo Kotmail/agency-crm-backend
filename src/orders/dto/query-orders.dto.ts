@@ -7,6 +7,14 @@ export class QueryOrdersDto {
   state?: string
 
   @IsOptional()
+  @IsIn(['createdAt', 'deadline', 'cost'])
+  sortby?: string = 'createdAt'
+
+  @IsOptional()
+  @IsIn(['asc', 'desc'])
+  orderby?: string = 'desc'
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)

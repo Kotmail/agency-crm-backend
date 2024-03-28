@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Order } from './order.entity'
-import { DeleteResult, FindManyOptions, Repository } from 'typeorm'
+import {
+  DeleteResult,
+  FindManyOptions,
+  FindOptionsOrder,
+  Repository,
+} from 'typeorm'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
 import { User, UserRole } from 'src/users/user.entity'
@@ -43,7 +48,7 @@ export class OrdersService {
         isArchived: queryDto.state === 'closed' ? true : false,
       },
       order: {
-        createdAt: 'DESC',
+        [queryDto.sortby]: queryDto.orderby,
       },
       take: queryDto.take,
       skip: queryDto.skip,
