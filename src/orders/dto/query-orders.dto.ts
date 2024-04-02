@@ -1,10 +1,29 @@
-import { Expose, Type } from 'class-transformer'
-import { IsIn, IsInt, IsOptional, Min } from 'class-validator'
+import { Expose, Transform, Type } from 'class-transformer'
+import {
+  IsBoolean,
+  IsEnum,
+  IsIn,
+  IsInt,
+  IsOptional,
+  Min,
+} from 'class-validator'
+import { OrderPriority, OrderStatus } from '../order.entity'
 
 export class QueryOrdersDto {
   @IsOptional()
-  @IsIn(['opened', 'closed'])
-  state?: string
+  @Transform(({ value }) => value.toString().split(','))
+  @IsEnum(OrderPriority, { each: true })
+  priority?: OrderPriority[]
+
+  @IsOptional()
+  @Transform(({ value }) => value.toString().split(','))
+  @IsEnum(OrderStatus, { each: true })
+  status?: OrderStatus[]
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  isArchived?: boolean = false
 
   @IsOptional()
   @IsIn(['createdAt', 'deadline', 'cost'])

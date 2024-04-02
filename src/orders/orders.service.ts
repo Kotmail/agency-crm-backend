@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Order } from './order.entity'
-import {
-  DeleteResult,
-  FindManyOptions,
-  FindOptionsOrder,
-  Repository,
-} from 'typeorm'
+import { Order, OrderPriority, OrderStatus } from './order.entity'
+import { DeleteResult, FindManyOptions, In, Repository } from 'typeorm'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
 import { User, UserRole } from 'src/users/user.entity'
@@ -45,7 +40,9 @@ export class OrdersService {
   findAll(user: User, queryDto: QueryOrdersDto): Promise<[Order[], number]> {
     const findOptions: FindManyOptions<Order> = {
       where: {
-        isArchived: queryDto.state === 'closed' ? true : false,
+        priority: In(queryDto.priority || Object.values(OrderPriority)),
+        status: In(queryDto.status || Object.values(OrderStatus)),
+        isArchived: queryDto.isArchived,
       },
       order: {
         [queryDto.sortby]: queryDto.orderby,
