@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { ForbiddenException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Order, OrderPriority, OrderStatus } from './order.entity'
 import { DeleteResult, FindManyOptions, In, Repository } from 'typeorm'
@@ -68,7 +68,17 @@ export class OrdersService {
     return this.ordersRepository.findOneBy({ id: Number(id) })
   }
 
-  delete(id: string): Promise<DeleteResult> {
+  async delete(authUser: User, id: string): Promise<DeleteResult> {
+    if (authUser.role !== UserRole.ADMIN) {
+      const orderData = await this.findById(id)
+
+      if (orderData && orderData.creator.id !== authUser.id) {
+        throw new ForbiddenException(
+          `You are not authorized to delete an order with ID ${id}`,
+        )
+      }
+    }
+
     return this.ordersRepository.delete(id)
   }
 }

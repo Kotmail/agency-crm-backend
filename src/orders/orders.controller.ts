@@ -14,15 +14,18 @@ import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator'
-import { User } from 'src/users/user.entity'
+import { User, UserRole } from 'src/users/user.entity'
 import { QueryOrdersDto } from './dto/query-orders.dto'
+import { RolesGuard } from 'src/auth/guards/roles.guard'
+import { Roles } from 'src/auth/decorators/roles.decorator'
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
   create(@CurrentUser() creator: User, @Body() orderDto: CreateOrderDto) {
     return this.ordersService.create(creator.id, orderDto)
   }
@@ -43,7 +46,8 @@ export class OrdersController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.ordersService.delete(id)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  delete(@CurrentUser() authUser: User, @Param('id') id: string) {
+    return this.ordersService.delete(authUser, id)
   }
 }

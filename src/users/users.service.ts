@@ -1,6 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { User } from './user.entity'
+import { User, UserRole } from './user.entity'
 import { DeleteResult, Not, Repository } from 'typeorm'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -16,25 +20,31 @@ export class UsersService {
     const isEmailExists = await this.findByEmail(userDto.email)
 
     if (isEmailExists) {
-      throw new BadRequestException(
-        'Пользователь с таким e-mail уже существует!',
-      )
+      throw new BadRequestException('A user with such an e-mail already exists')
     }
 
     if (userDto.login) {
       const isLoginExist = await this.findByLogin(userDto.login)
 
       if (isLoginExist) {
-        throw new BadRequestException(
-          'Пользователь с таким логином уже существует!',
-        )
+        throw new BadRequestException('A user with this login already exists')
       }
     }
 
     return await this.usersRepository.save(userDto)
   }
 
-  async update(id: number, userDto: UpdateUserDto): Promise<User> {
+  async update(
+    authUser: User,
+    id: number,
+    userDto: UpdateUserDto,
+  ): Promise<User> {
+    if (authUser.role !== UserRole.ADMIN && authUser.id !== id) {
+      throw new ForbiddenException(
+        `You are not authorized to update a profile with ID ${id}`,
+      )
+    }
+
     if (userDto.email) {
       const isEmailExists = await this.usersRepository.findOneBy({
         id: Not(id),
@@ -42,7 +52,7 @@ export class UsersService {
       })
 
       if (isEmailExists) {
-        throw new BadRequestException('Указанный e-mail занят.')
+        throw new BadRequestException('The specified e-mail is busy')
       }
     }
 
@@ -53,7 +63,7 @@ export class UsersService {
       })
 
       if (isLoginExists) {
-        throw new BadRequestException('Указанный логин занят.')
+        throw new BadRequestException('The specified login is busy')
       }
     }
 
@@ -108,7 +118,11 @@ export class UsersService {
     })
   }
 
-  delete(id: string): Promise<DeleteResult> {
+  delete(authUser: User, id: string): Promise<DeleteResult> {
+    if (authUser.id === Number(id)) {
+      throw new ForbiddenException('The user cannot delete himself')
+    }
+
     return this.usersRepository.delete(id)
   }
 }
