@@ -8,6 +8,7 @@ import { User, UserRole } from './user.entity'
 import { DeleteResult, Not, Repository } from 'typeorm'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
+import { QueryUsersDto } from './dto/query-users.dto'
 
 @Injectable()
 export class UsersService {
@@ -110,11 +111,13 @@ export class UsersService {
     })
   }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find({
+  findAll(queryDto: QueryUsersDto): Promise<[User[], number]> {
+    return this.usersRepository.findAndCount({
       order: {
         id: 'ASC',
       },
+      take: queryDto.take,
+      skip: queryDto.skip,
     })
   }
 

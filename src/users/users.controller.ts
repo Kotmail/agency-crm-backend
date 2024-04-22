@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common'
 import { UsersService } from './users.service'
@@ -16,6 +17,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard'
 import { Roles } from 'src/auth/decorators/roles.decorator'
 import { User, UserRole } from './user.entity'
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator'
+import { QueryUsersDto } from './dto/query-users.dto'
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
@@ -38,8 +40,8 @@ export class UsersController {
   }
 
   @Get()
-  getAll() {
-    return this.usersService.findAll()
+  getAll(@Query() queryDto: QueryUsersDto) {
+    return this.usersService.findAll(queryDto)
   }
 
   @Get(':id')
