@@ -9,9 +9,14 @@ export default class InitialSeeder implements Seeder {
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,
   ): Promise<void> {
+    // Cleaning tables before seeding.
+
+    dataSource.query('TRUNCATE "orders", "users" RESTART IDENTITY CASCADE;')
+
     // Creating specific base users.
 
     const usersRepository = dataSource.getRepository(User)
+    const ordersRepository = dataSource.getRepository(Order)
 
     const baseUsersData: Partial<User>[] = [
       {
@@ -59,8 +64,6 @@ export default class InitialSeeder implements Seeder {
             }),
         ),
     )
-
-    const ordersRepository = dataSource.getRepository(Order)
 
     await ordersRepository.save(orders)
   }
