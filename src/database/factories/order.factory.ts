@@ -18,6 +18,7 @@ export default setSeederFactory(Order, () => {
   order.priority = orderPriorities[currentPriorityIdx]
   order.status = orderStatuses[currentStatusIdx]
   order.deadline = faker.date.future()
+  order.createdAt = faker.date.past()
 
   return order
 })
