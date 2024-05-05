@@ -5,6 +5,20 @@ import { Order } from 'src/orders/order.entity'
 import { faker } from '@faker-js/faker'
 
 export default class InitialSeeder implements Seeder {
+  public groupUsersByRole(users: User[]): Partial<Record<UserRole, User[]>> {
+    return users.reduce((acc, user) => {
+      const role = user.role
+
+      if (acc[role]) {
+        acc[role].push(user)
+      } else {
+        acc[role] = [user]
+      }
+
+      return acc
+    }, {})
+  }
+
   public async run(
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,
@@ -48,10 +62,8 @@ export default class InitialSeeder implements Seeder {
     const userFactory = factoryManager.get(User)
     const orderFactory = factoryManager.get(Order)
 
-    users.concat(...(await userFactory.saveMany(17)))
-
-    const managers = users.filter((user) => user.role === UserRole.MANAGER)
-    const executors = users.filter((user) => user.role === UserRole.EXECUTOR)
+    const mergedUsers = users.concat(await userFactory.saveMany(17))
+    const groupedUsersByRole = this.groupUsersByRole(mergedUsers)
 
     const orders = await Promise.all(
       Array(50)
@@ -59,8 +71,8 @@ export default class InitialSeeder implements Seeder {
         .map(
           async () =>
             await orderFactory.make({
-              creator: faker.helpers.arrayElement(managers),
-              executor: faker.helpers.arrayElement(executors),
+              creator: faker.helpers.arrayElement(groupedUsersByRole.manager),
+              executor: faker.helpers.arrayElement(groupedUsersByRole.executor),
             }),
         ),
     )
