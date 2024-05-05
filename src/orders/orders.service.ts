@@ -21,20 +21,39 @@ export class OrdersService {
       executor: { id: orderDto.executorId },
     })
 
-    return await this.ordersRepository.findOneBy({ id })
+    return await this.findById(id)
   }
 
-  async update(id: string, orderDto: UpdateOrderDto): Promise<Order> {
-    const orderId = Number(id)
+  async update(
+    authUser: User,
+    id: number,
+    orderDto: UpdateOrderDto,
+  ): Promise<Order> {
+    if (authUser.role !== UserRole.ADMIN) {
+      const orderData = await this.findById(id)
+      const orderRelationUserIds = [orderData.creator.id, orderData.executor.id]
+
+      if (!orderRelationUserIds.includes(authUser.id)) {
+        throw new ForbiddenException(
+          `You are not authorized to update an order with ID ${id}`,
+        )
+      }
+
+      if (authUser.role === UserRole.EXECUTOR) {
+        Object.keys(orderDto).forEach(
+          (key) => key !== 'status' && delete orderDto[key],
+        )
+      }
+    }
 
     await this.ordersRepository.save({
-      id: orderId,
+      id,
       ...orderDto,
       creator: orderDto.creatorId ? { id: orderDto.creatorId } : undefined,
       executor: orderDto.executorId ? { id: orderDto.executorId } : undefined,
     })
 
-    return await this.ordersRepository.findOneBy({ id: orderId })
+    return await this.findById(id)
   }
 
   findAll(user: User, queryDto: QueryOrdersDto): Promise<[Order[], number]> {
@@ -64,11 +83,11 @@ export class OrdersService {
     return this.ordersRepository.findAndCount(findOptions)
   }
 
-  findById(id: string): Promise<Order> {
-    return this.ordersRepository.findOneBy({ id: Number(id) })
+  findById(id: number): Promise<Order> {
+    return this.ordersRepository.findOneBy({ id })
   }
 
-  async delete(authUser: User, id: string): Promise<DeleteResult> {
+  async delete(authUser: User, id: number): Promise<DeleteResult> {
     if (authUser.role !== UserRole.ADMIN) {
       const orderData = await this.findById(id)
 

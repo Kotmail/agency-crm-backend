@@ -31,8 +31,12 @@ export class OrdersController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() orderDto: UpdateOrderDto) {
-    return this.ordersService.update(id, orderDto)
+  update(
+    @CurrentUser() authUser: User,
+    @Param('id') id: string,
+    @Body() orderDto: UpdateOrderDto,
+  ) {
+    return this.ordersService.update(authUser, Number(id), orderDto)
   }
 
   @Get()
@@ -42,12 +46,12 @@ export class OrdersController {
 
   @Get(':id')
   getOne(@Param('id') id: string) {
-    return this.ordersService.findById(id)
+    return this.ordersService.findById(Number(id))
   }
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   delete(@CurrentUser() authUser: User, @Param('id') id: string) {
-    return this.ordersService.delete(authUser, id)
+    return this.ordersService.delete(authUser, Number(id))
   }
 }
