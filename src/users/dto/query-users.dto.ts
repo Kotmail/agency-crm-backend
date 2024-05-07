@@ -1,7 +1,13 @@
-import { Expose, Type } from 'class-transformer'
-import { IsInt, IsOptional, Min } from 'class-validator'
+import { Expose, Transform, Type } from 'class-transformer'
+import { IsEnum, IsInt, IsOptional, Min } from 'class-validator'
+import { UserRole } from '../user.entity'
 
 export class QueryUsersDto {
+  @IsOptional()
+  @Transform(({ value }) => value.toString().split(','))
+  @IsEnum(UserRole, { each: true })
+  role?: UserRole[]
+
   @IsOptional()
   @Type(() => Number)
   @IsInt()

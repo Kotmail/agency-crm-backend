@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User, UserRole } from './user.entity'
-import { DeleteResult, Not, Repository } from 'typeorm'
+import { DeleteResult, In, Not, Repository } from 'typeorm'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { QueryUsersDto } from './dto/query-users.dto'
@@ -111,8 +111,14 @@ export class UsersService {
     })
   }
 
-  findAll(queryDto: QueryUsersDto): Promise<[User[], number]> {
+  findAll(authUser: User, queryDto: QueryUsersDto): Promise<[User[], number]> {
     return this.usersRepository.findAndCount({
+      where: {
+        role:
+          authUser.role === UserRole.EXECUTOR
+            ? UserRole.MANAGER
+            : In(queryDto.role || Object.values(UserRole)),
+      },
       order: {
         id: 'ASC',
       },

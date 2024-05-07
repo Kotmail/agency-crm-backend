@@ -40,8 +40,8 @@ export class UsersController {
   }
 
   @Get()
-  getAll(@Query() queryDto: QueryUsersDto) {
-    return this.usersService.findAll(queryDto)
+  getAll(@CurrentUser() authUser: User, @Query() queryDto: QueryUsersDto) {
+    return this.usersService.findAll(authUser, queryDto)
   }
 
   @Get(':id')
