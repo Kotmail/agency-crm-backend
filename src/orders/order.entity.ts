@@ -46,12 +46,14 @@ export class Order {
 
   @ManyToOne(() => User, (user) => user.orders, {
     eager: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'creator_id' })
   creator: User
 
   @ManyToOne(() => User, (user) => user.id, {
     eager: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'executor_id' })
   executor: User
