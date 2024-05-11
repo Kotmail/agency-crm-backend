@@ -14,7 +14,7 @@ export class CreateOrderDto {
   @IsString()
   description: string
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   objectAddress: string
 

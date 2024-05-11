@@ -33,6 +33,7 @@ export class Order {
   @Column({
     type: 'text',
     name: 'object_address',
+    nullable: true,
   })
   objectAddress: string
 
