@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   IsStrongPassword,
+  MinLength,
 } from 'class-validator'
 import { UserRole } from '../user.entity'
 
@@ -25,5 +26,6 @@ export class CreateUserDto {
   role: UserRole
 
   @IsStrongPassword()
+  @MinLength(10)
   password: string
 }

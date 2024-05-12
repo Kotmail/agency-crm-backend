@@ -4,25 +4,28 @@ import {
   IsString,
   IsDateString,
   IsOptional,
-  IsNotEmpty,
   IsBoolean,
+  IsPositive,
+  MinLength,
 } from 'class-validator'
 import { OrderPriority, OrderStatus } from '../order.entity'
 
 export class CreateOrderDto {
-  @IsNotEmpty()
   @IsString()
+  @MinLength(15)
   description: string
 
   @IsOptional()
   @IsString()
+  @MinLength(10)
   objectAddress: string
 
-  @IsNotEmpty()
   @IsString()
+  @MinLength(5)
   brand: string
 
   @IsNumber()
+  @IsPositive()
   cost: number
 
   @IsOptional()
