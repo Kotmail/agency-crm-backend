@@ -1,7 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "watchOptions": {
-    "watchFile": "fixedPollingInterval"
-  },
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"],
 }
