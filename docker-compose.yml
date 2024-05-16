@@ -1,6 +1,6 @@
 services:
-  api:
-    container_name: api
+  api-development:
+    container_name: api-development
     build:
       context: .
       target: development
@@ -20,6 +20,25 @@ services:
     depends_on:
       - postgres
     command: npm run start:dev
+    profiles:
+      - dev
+
+  api-production:
+    container_name: api-production
+    build:
+      context: .
+      target: production
+    env_file:
+      - .env
+    environment:
+      - TYPEORM_MIGRATIONS_RUN=true
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    profiles:
+      - prod
+
   postgres:
     container_name: postgres
     image: postgres

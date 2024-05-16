@@ -14,6 +14,7 @@ export const dataSourceOptions: DataSourceOptions & SeederOptions = {
   entities: ['dist/**/*.entity.js'],
   subscribers: ['dist/**/*.subscriber.js'],
   synchronize: false,
+  migrationsRun: process.env.TYPEORM_MIGRATIONS_RUN === 'true',
   migrations: ['dist/database/migrations/*.js'],
   factories: ['dist/database/factories/*.js'],
   seeds: ['dist/database/seeds/*.js'],
