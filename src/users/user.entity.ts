@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger'
 import { Order } from 'src/orders/order.entity'
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
 
@@ -9,18 +10,27 @@ export enum UserRole {
 
 @Entity('users')
 export class User {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number
 
+  @ApiProperty({
+    nullable: true,
+  })
   @Column({ unique: true, nullable: true })
-  login: string
+  login: string | null
 
+  @ApiProperty()
   @Column({ unique: true })
   email: string
 
+  @ApiProperty()
   @Column({ name: 'full_name' })
   fullName: string
 
+  @ApiProperty({
+    enum: UserRole,
+  })
   @Column({
     type: 'enum',
     enum: UserRole,
