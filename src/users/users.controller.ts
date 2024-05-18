@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -19,7 +20,11 @@ import { User, UserRole } from './user.entity'
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator'
 import { QueryUsersDto } from './dto/query-users.dto'
 import {
+  ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -36,6 +41,7 @@ export class UsersController {
     type: User,
     description: 'A new user has been successfully created.',
   })
+  @ApiBadRequestResponse({ description: 'Bad Request.' })
   @Post()
   @Roles(UserRole.ADMIN)
   create(@Body() userDto: CreateUserDto) {
@@ -47,6 +53,8 @@ export class UsersController {
     type: User,
     description: 'The user has been successfully updated.',
   })
+  @ApiBadRequestResponse({ description: 'Bad Request.' })
+  @ApiForbiddenResponse({ description: 'Permissions error.' })
   @Put(':id')
   update(
     @CurrentUser() authUser: User,
@@ -66,11 +74,17 @@ export class UsersController {
     type: User,
     description: 'The user was successfully received.',
   })
+  @ApiNotFoundResponse({ description: 'The user was not found.' })
   @Get(':id')
   getOne(@Param('id') id: string) {
-    return this.usersService.findById(id)
+    return this.usersService.findOne(id)
   }
 
+  @ApiOperation({ summary: 'Delete a specific user.' })
+  @ApiNoContentResponse({ description: 'The user was successfully deleted.' })
+  @ApiNotFoundResponse({ description: 'The user was not found.' })
+  @ApiForbiddenResponse({ description: 'Permissions error.' })
+  @HttpCode(204)
   @Delete(':id')
   @Roles(UserRole.ADMIN)
   delete(@CurrentUser() authUser: User, @Param('id') id: string) {

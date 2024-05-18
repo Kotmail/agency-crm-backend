@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User, UserRole } from './user.entity'
@@ -75,6 +76,46 @@ export class UsersService {
     return await this.usersRepository.findOneBy({ id })
   }
 
+  findAll(authUser: User, queryDto: QueryUsersDto): Promise<[User[], number]> {
+    return this.usersRepository.findAndCount({
+      where: {
+        role:
+          authUser.role === UserRole.EXECUTOR
+            ? UserRole.MANAGER
+            : In(queryDto.role || Object.values(UserRole)),
+      },
+      order: {
+        id: 'ASC',
+      },
+      take: queryDto.take,
+      skip: queryDto.skip,
+    })
+  }
+
+  async findOne(id: string): Promise<User> {
+    const user = await this.findById(id)
+
+    if (!user) {
+      throw new NotFoundException('The user was not found')
+    }
+
+    return user
+  }
+
+  async delete(authUser: User, id: string): Promise<DeleteResult> {
+    const user = await this.findById(id)
+
+    if (!user) {
+      throw new NotFoundException('The user was not found')
+    }
+
+    if (authUser.id === Number(id)) {
+      throw new ForbiddenException('The user cannot delete himself')
+    }
+
+    return this.usersRepository.delete(id)
+  }
+
   findById(id: string): Promise<User> {
     return this.usersRepository.findOneBy({ id: Number(id) })
   }
@@ -109,29 +150,5 @@ export class UsersService {
         password: selectPassword,
       },
     })
-  }
-
-  findAll(authUser: User, queryDto: QueryUsersDto): Promise<[User[], number]> {
-    return this.usersRepository.findAndCount({
-      where: {
-        role:
-          authUser.role === UserRole.EXECUTOR
-            ? UserRole.MANAGER
-            : In(queryDto.role || Object.values(UserRole)),
-      },
-      order: {
-        id: 'ASC',
-      },
-      take: queryDto.take,
-      skip: queryDto.skip,
-    })
-  }
-
-  delete(authUser: User, id: string): Promise<DeleteResult> {
-    if (authUser.id === Number(id)) {
-      throw new ForbiddenException('The user cannot delete himself')
-    }
-
-    return this.usersRepository.delete(id)
   }
 }
