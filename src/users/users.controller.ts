@@ -29,6 +29,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
+import { ApiPagintaedResponse } from 'src/shared/decorators/api-paginated-response'
 
 @ApiTags('Users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -64,6 +65,10 @@ export class UsersController {
     return this.usersService.update(authUser, Number(id), userDto)
   }
 
+  @ApiOperation({ summary: 'Get all users.' })
+  @ApiPagintaedResponse(User, {
+    description: 'Users were successfully received.',
+  })
   @Get()
   getAll(@CurrentUser() authUser: User, @Query() queryDto: QueryUsersDto) {
     return this.usersService.findAll(authUser, queryDto)

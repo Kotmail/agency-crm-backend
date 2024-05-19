@@ -10,6 +10,7 @@ import { DeleteResult, In, Not, Repository } from 'typeorm'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { QueryUsersDto } from './dto/query-users.dto'
+import { PaginatedDto } from 'src/shared/dto/paginated.dto'
 
 @Injectable()
 export class UsersService {
@@ -76,8 +77,11 @@ export class UsersService {
     return await this.usersRepository.findOneBy({ id })
   }
 
-  findAll(authUser: User, queryDto: QueryUsersDto): Promise<[User[], number]> {
-    return this.usersRepository.findAndCount({
+  async findAll(
+    authUser: User,
+    queryDto: QueryUsersDto,
+  ): Promise<PaginatedDto<User>> {
+    const [items, totalCount] = await this.usersRepository.findAndCount({
       where: {
         role:
           authUser.role === UserRole.EXECUTOR
@@ -90,6 +94,8 @@ export class UsersService {
       take: queryDto.take,
       skip: queryDto.skip,
     })
+
+    return { items, totalCount }
   }
 
   async findOne(id: string): Promise<User> {

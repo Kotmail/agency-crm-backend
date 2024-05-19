@@ -10,26 +10,39 @@ export enum UserRole {
 
 @Entity('users')
 export class User {
-  @ApiProperty()
+  @ApiProperty({
+    example: 1,
+    description: 'User ID.',
+  })
   @PrimaryGeneratedColumn()
   id: number
 
   @ApiProperty({
     nullable: true,
+    example: 'AllenBwn',
+    description: 'Login of user.',
   })
   @Column({ unique: true, nullable: true })
   login: string | null
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'mail@example.com',
+    description: 'E-mail address of user.',
+  })
   @Column({ unique: true })
   email: string
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'Allen Brown',
+    description: 'Fullname of user.',
+  })
   @Column({ name: 'full_name' })
   fullName: string
 
   @ApiProperty({
     enum: UserRole,
+    default: UserRole.EXECUTOR,
+    description: 'Role of user.',
   })
   @Column({
     type: 'enum',
