@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { User } from 'src/users/user.entity'
 import {
   Column,
@@ -22,29 +23,53 @@ export enum OrderStatus {
 
 @Entity('orders')
 export class Order {
+  @ApiProperty({
+    example: 1,
+    description: 'Order ID.',
+  })
   @PrimaryGeneratedColumn()
   id: number
 
+  @ApiProperty({
+    example: 'Lorem ipsum dolor sit amet, consectetur...',
+    description: 'Description of order.',
+  })
   @Column({
     type: 'text',
   })
   description: string
 
+  @ApiProperty({
+    example: '3393 Ronny Way Apt. 742',
+    description: 'Address of object.',
+  })
   @Column({
     type: 'text',
     name: 'object_address',
     nullable: true,
   })
-  objectAddress: string
+  objectAddress: string | null
 
+  @ApiProperty({
+    example: 'Brand',
+    description: 'Brand of order.',
+  })
   @Column()
   brand: string
 
+  @ApiProperty({
+    example: 1000,
+    description: 'Cost of order.',
+  })
   @Column({
     type: 'int',
   })
   cost: number
 
+  @ApiProperty({
+    type: () => User,
+    description: 'Manager of order.',
+  })
   @ManyToOne(() => User, (user) => user.orders, {
     eager: true,
     onDelete: 'CASCADE',
@@ -52,6 +77,10 @@ export class Order {
   @JoinColumn({ name: 'creator_id' })
   creator: User
 
+  @ApiProperty({
+    type: () => User,
+    description: 'Executor of order.',
+  })
   @ManyToOne(() => User, (user) => user.id, {
     eager: true,
     onDelete: 'CASCADE',
@@ -59,6 +88,11 @@ export class Order {
   @JoinColumn({ name: 'executor_id' })
   executor: User
 
+  @ApiProperty({
+    enum: OrderPriority,
+    default: OrderPriority.LOW,
+    description: 'Priority of order.',
+  })
   @Column({
     type: 'enum',
     enum: OrderPriority,
@@ -66,6 +100,11 @@ export class Order {
   })
   priority: OrderPriority
 
+  @ApiPropertyOptional({
+    enum: OrderStatus,
+    default: OrderStatus.WAITING,
+    description: 'Status of order.',
+  })
   @Column({
     type: 'enum',
     enum: OrderStatus,
@@ -73,11 +112,18 @@ export class Order {
   })
   status: OrderStatus
 
+  @ApiProperty({
+    description: 'Deadline of order.',
+  })
   @Column({
     type: 'date',
   })
   deadline: Date
 
+  @ApiPropertyOptional({
+    default: false,
+    description: 'Is the order in the archive.',
+  })
   @Column({
     type: 'boolean',
     name: 'is_archived',
@@ -85,6 +131,9 @@ export class Order {
   })
   isArchived: boolean
 
+  @ApiProperty({
+    description: 'Order creation date.',
+  })
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
 }

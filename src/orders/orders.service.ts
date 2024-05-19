@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common'
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Order, OrderPriority, OrderStatus } from './order.entity'
 import { DeleteResult, FindManyOptions, In, Repository } from 'typeorm'
@@ -6,6 +10,7 @@ import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
 import { User, UserRole } from 'src/users/user.entity'
 import { QueryOrdersDto } from './dto/query-orders.dto'
+import { PaginatedDto } from 'src/shared/dto/paginated.dto'
 
 @Injectable()
 export class OrdersService {
@@ -14,23 +19,26 @@ export class OrdersService {
     private ordersRepository: Repository<Order>,
   ) {}
 
-  async create(creatorId: number, orderDto: CreateOrderDto): Promise<Order> {
-    const { id } = await this.ordersRepository.save({
+  create(creatorId: number, orderDto: CreateOrderDto): Promise<Order> {
+    return this.ordersRepository.save({
       ...orderDto,
       creator: { id: orderDto.creatorId || creatorId },
       executor: { id: orderDto.executorId },
     })
-
-    return await this.findById(id)
   }
 
   async update(
     authUser: User,
-    id: number,
+    id: string,
     orderDto: UpdateOrderDto,
   ): Promise<Order> {
+    const orderData = await this.findById(id)
+
+    if (!orderData) {
+      throw new NotFoundException('The order was not found')
+    }
+
     if (authUser.role !== UserRole.ADMIN) {
-      const orderData = await this.findById(id)
       const orderRelationUserIds = [orderData.creator.id, orderData.executor.id]
 
       if (!orderRelationUserIds.includes(authUser.id)) {
@@ -47,7 +55,7 @@ export class OrdersService {
     }
 
     await this.ordersRepository.save({
-      id,
+      id: Number(id),
       ...orderDto,
       creator: orderDto.creatorId ? { id: orderDto.creatorId } : undefined,
       executor: orderDto.executorId ? { id: orderDto.executorId } : undefined,
@@ -56,7 +64,10 @@ export class OrdersService {
     return await this.findById(id)
   }
 
-  findAll(user: User, queryDto: QueryOrdersDto): Promise<[Order[], number]> {
+  async findAll(
+    user: User,
+    queryDto: QueryOrdersDto,
+  ): Promise<PaginatedDto<Order>> {
     const findOptions: FindManyOptions<Order> = {
       where: {
         priority: In(queryDto.priority || Object.values(OrderPriority)),
@@ -64,7 +75,7 @@ export class OrdersService {
         isArchived: queryDto.isArchived,
       },
       order: {
-        [queryDto.sortby]: queryDto.orderby,
+        [queryDto.sortBy]: queryDto.orderBy,
       },
       take: queryDto.take,
       skip: queryDto.skip,
@@ -80,14 +91,29 @@ export class OrdersService {
       }
     }
 
-    return this.ordersRepository.findAndCount(findOptions)
+    const [items, totalCount] =
+      await this.ordersRepository.findAndCount(findOptions)
+
+    return { items, totalCount }
   }
 
-  findById(id: number): Promise<Order> {
-    return this.ordersRepository.findOneBy({ id })
+  async findOne(id: string): Promise<Order> {
+    const order = await this.findById(id)
+
+    if (!order) {
+      throw new NotFoundException('The order was not found')
+    }
+
+    return order
   }
 
-  async delete(authUser: User, id: number): Promise<DeleteResult> {
+  async delete(authUser: User, id: string): Promise<DeleteResult> {
+    const order = await this.findById(id)
+
+    if (!order) {
+      throw new NotFoundException('The order was not found')
+    }
+
     if (authUser.role !== UserRole.ADMIN) {
       const orderData = await this.findById(id)
 
@@ -99,5 +125,9 @@ export class OrdersService {
     }
 
     return this.ordersRepository.delete(id)
+  }
+
+  findById(id: string): Promise<Order> {
+    return this.ordersRepository.findOneBy({ id: Number(id) })
   }
 }
