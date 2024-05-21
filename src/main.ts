@@ -11,6 +11,15 @@ async function bootstrap() {
   app.enableCors()
 
   const swaggerConfig = new DocumentBuilder()
+    .addBearerAuth(
+      {
+        type: 'http',
+        bearerFormat: 'JWT',
+        description: 'Input your JWT token',
+        in: 'header',
+      },
+      'Auth',
+    )
     .setTitle('AgencyCRM API')
     .setDescription('The AgencyCRM API documentation.')
     .setVersion('1.0')

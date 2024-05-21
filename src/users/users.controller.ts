@@ -22,6 +22,7 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator'
 import { QueryUsersDto } from './dto/query-users.dto'
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
@@ -34,6 +35,7 @@ import {
 import { ApiPagintaedResponse } from 'src/shared/decorators/api-paginated-response'
 
 @ApiTags('Users')
+@ApiBearerAuth('Auth')
 @ApiUnauthorizedResponse({ description: 'Unauthorized user.' })
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')

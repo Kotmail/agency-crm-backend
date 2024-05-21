@@ -13,6 +13,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { CurrentUser } from './decorators/current-user.decorator'
 import { User } from 'src/users/user.entity'
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
@@ -45,6 +46,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'User verification.' })
+  @ApiBearerAuth('Auth')
   @ApiOkResponse({
     type: authSuccessResponseDto,
     description: 'The user has been successfully verified.',

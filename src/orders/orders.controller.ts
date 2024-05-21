@@ -21,6 +21,7 @@ import { QueryOrdersDto } from './dto/query-orders.dto'
 import { RolesGuard } from 'src/auth/guards/roles.guard'
 import { Roles } from 'src/auth/decorators/roles.decorator'
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
@@ -34,6 +35,7 @@ import { Order } from './order.entity'
 import { ApiPagintaedResponse } from 'src/shared/decorators/api-paginated-response'
 
 @ApiTags('Orders')
+@ApiBearerAuth('Auth')
 @ApiUnauthorizedResponse({ description: 'Unauthorized user.' })
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('orders')
