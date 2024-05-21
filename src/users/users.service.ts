@@ -42,6 +42,12 @@ export class UsersService {
     id: number,
     userDto: UpdateUserDto,
   ): Promise<User> {
+    const user = await this.findById(String(id))
+
+    if (!user) {
+      throw new NotFoundException('The user was not found')
+    }
+
     if (authUser.role !== UserRole.ADMIN && authUser.id !== id) {
       throw new ForbiddenException(
         `You are not authorized to update a profile with ID ${id}`,

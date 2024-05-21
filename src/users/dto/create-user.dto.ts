@@ -12,13 +12,14 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 
 export class CreateUserDto {
   @ApiPropertyOptional({
+    nullable: true,
     default: null,
     example: 'AllenBwn',
     description: 'Login of user.',
   })
   @IsOptional()
   @IsString()
-  login: string
+  login: string | null
 
   @ApiProperty({
     example: 'mail@example.com',

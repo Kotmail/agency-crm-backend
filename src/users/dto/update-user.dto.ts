@@ -4,7 +4,7 @@ import { Transform } from 'class-transformer'
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @Transform(({ value }) => value || null)
-  login: string
+  login: string | null
 
   @Transform(({ value }) => value || undefined)
   password: string

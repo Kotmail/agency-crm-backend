@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -27,11 +28,13 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger'
 import { Order } from './order.entity'
 import { ApiPagintaedResponse } from 'src/shared/decorators/api-paginated-response'
 
 @ApiTags('Orders')
+@ApiUnauthorizedResponse({ description: 'Unauthorized user.' })
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('orders')
 export class OrdersController {
@@ -88,7 +91,7 @@ export class OrdersController {
   @ApiNoContentResponse({ description: 'The order was successfully deleted.' })
   @ApiNotFoundResponse({ description: 'The order was not found.' })
   @ApiForbiddenResponse({ description: 'Permissions error.' })
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   delete(@CurrentUser() authUser: User, @Param('id') id: string) {
