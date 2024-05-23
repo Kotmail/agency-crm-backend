@@ -58,3 +58,24 @@ npm run start:dev
 # - or for production
 npm run start:prod
 ```
+
+### Installation with Docker
+
+**Prerequisites**
+
+1. [Docker](https://www.docker.com) installed.
+2. [Docker Compose](https://docs.docker.com/compose/install/) installed.
+
+```bash
+# Launching services
+# - in development mode with a file watcher
+docker compose up --watch
+# - in production mode
+docker compose --profile prod up -d
+```
+
+After installation using one of the above methods, the API endpoints will be available at the local address: [http://localhost:3000](http://localhost:3000).
+
+## API specification
+
+The API specification is implemented using Swagger and is available after starting the server at: [http://localhost:3000/swagger](http://localhost:3000/swagger).
