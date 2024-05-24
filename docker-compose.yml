@@ -1,6 +1,6 @@
 services:
-  api-development:
-    container_name: api-development
+  api-dev:
+    container_name: api-dev
     build:
       context: .
       target: development
@@ -15,32 +15,35 @@ services:
           path: package.json
     env_file:
       - .env
+    environment:
+      - POSTGRES_HOST=postgres-dev
     ports:
       - 3000:3000
     depends_on:
-      - postgres
+      - postgres-dev
     command: npm run start:dev
     profiles:
       - dev
 
-  api-production:
-    container_name: api-production
+  api-prod:
+    container_name: api-prod
     build:
       context: .
       target: production
     env_file:
       - .env
     environment:
+      - POSTGRES_HOST=postgres-prod
       - TYPEORM_MIGRATIONS_RUN=true
     ports:
-      - 3000:3000
+      - 3001:3000
     depends_on:
-      - postgres
+      - postgres-prod
     profiles:
       - prod
 
-  postgres:
-    container_name: postgres
+  postgres-dev:
+    container_name: postgres-dev
     image: postgres
     restart: always
     env_file:
@@ -48,8 +51,24 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres-dev:/var/lib/postgresql/data
+    profiles:
+      - dev
+
+  postgres-prod:
+    container_name: postgres-prod
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres-prod:/var/lib/postgresql/data
+    profiles:
+      - prod
 
 volumes:
   api_sources:
-  postgres:
+  postgres-dev:
+  postgres-prod:

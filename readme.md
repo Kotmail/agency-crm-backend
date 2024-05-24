@@ -26,7 +26,10 @@ git clone https://github.com/Kotmail/agency-crm-backend.git
 cd agency-crm-backend
 ```
 
-After executing the commands above, select your preferred installation option below:
+> [!WARNING]  
+> You need to rename the **.env.example** file in the root folder to **.env**, and then change the values according to your needs.
+
+After completing the steps above, select the preferred installation option below:
 
 ### Manual installation
 
@@ -35,9 +38,6 @@ After executing the commands above, select your preferred installation option be
 1. [Node.js](https://nodejs.org) installed.
 2. [Npm](https://www.npmjs.com) installed.
 3. [PostgreSQL](https://www.postgresql.org) installed. A database has been created.
-
-> The **.env.example** file in the root folder
-> Copy over the content to **.env** and change the values to your needs.
 
 ```bash
 # Installing dependencies in the project folder
@@ -64,12 +64,12 @@ npm run start:prod
 **Prerequisites**
 
 1. [Docker](https://www.docker.com) installed.
-2. [Docker Compose](https://docs.docker.com/compose/install/) installed.
+2. [Docker Compose](https://docs.docker.com/compose/install) installed.
 
 ```bash
 # Launching services
 # - in development mode with a file watcher
-docker compose up --watch
+docker compose --profile dev up --watch
 # - in production mode
 docker compose --profile prod up -d
 ```
