@@ -9,16 +9,8 @@ export default setSeederFactory(Order, () => {
   const currentStatusIdx = faker.number.int(2)
   const orderPriorities: OrderPriority[] = Object.values(OrderPriority)
   const orderStatuses: OrderStatus[] = Object.values(OrderStatus)
-  const orderBrand = faker.word.sample({
-    length: {
-      min: 5,
-      max: 10,
-    },
-  })
 
   order.description = faker.lorem.paragraph(1)
-  order.objectAddress = faker.location.streetAddress()
-  order.brand = orderBrand[0].toLocaleUpperCase() + orderBrand.substring(1)
   order.cost = Number(faker.commerce.price({ min: 12550, max: 200000, dec: 0 }))
   order.priority = orderPriorities[currentPriorityIdx]
   order.status = orderStatuses[currentStatusIdx]

@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -10,6 +11,7 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -38,6 +40,7 @@ import { ApiPagintaedResponse } from 'src/shared/decorators/api-paginated-respon
 @ApiBearerAuth('Auth')
 @ApiUnauthorizedResponse({ description: 'Unauthorized user.' })
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

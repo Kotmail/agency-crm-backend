@@ -40,24 +40,6 @@ export class Order {
   description: string
 
   @ApiProperty({
-    example: '3393 Ronny Way Apt. 742',
-    description: 'Address of object.',
-  })
-  @Column({
-    type: 'text',
-    name: 'object_address',
-    nullable: true,
-  })
-  objectAddress: string | null
-
-  @ApiProperty({
-    example: 'Brand',
-    description: 'Brand of order.',
-  })
-  @Column()
-  brand: string
-
-  @ApiProperty({
     example: 1000,
     description: 'Cost of order.',
   })

@@ -9,6 +9,7 @@ import {
 } from 'class-validator'
 import { UserRole } from '../user.entity'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { Exclude } from 'class-transformer'
 
 export class CreateUserDto {
   @ApiPropertyOptional({
@@ -51,5 +52,6 @@ export class CreateUserDto {
   })
   @IsStrongPassword()
   @MinLength(10)
+  @Exclude({ toPlainOnly: true })
   password: string
 }

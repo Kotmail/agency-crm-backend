@@ -21,25 +21,6 @@ export class CreateOrderDto {
   @MinLength(15)
   description: string
 
-  @ApiPropertyOptional({
-    minLength: 10,
-    example: '3393 Ronny Way Apt. 742',
-    description: 'Address of object.',
-  })
-  @IsOptional()
-  @IsString()
-  @MinLength(10)
-  objectAddress: string
-
-  @ApiProperty({
-    minLength: 5,
-    example: 'Brand',
-    description: 'Brand of order.',
-  })
-  @IsString()
-  @MinLength(5)
-  brand: string
-
   @ApiProperty({
     minimum: 1,
     example: 1000,
