@@ -10,7 +10,7 @@ export default setSeederFactory(Order, () => {
   const orderPriorities: OrderPriority[] = Object.values(OrderPriority)
   const orderStatuses: OrderStatus[] = Object.values(OrderStatus)
 
-  order.description = faker.lorem.paragraph(1)
+  order.description = 'Пример текста-описания заказа для исполнителя.'
   order.cost = Number(faker.commerce.price({ min: 12550, max: 200000, dec: 0 }))
   order.priority = orderPriorities[currentPriorityIdx]
   order.status = orderStatuses[currentStatusIdx]
