@@ -91,3 +91,7 @@ After installation using one of the above methods, the API endpoints will be ava
 ## API specification
 
 The API specification is implemented using Swagger and is available after starting the server at: [http://localhost:3000/swagger](http://localhost:3000/swagger).
+
+## License
+
+[MIT](https://github.com/Kotmail/agency-crm-backend/blob/master/LICENSE)
