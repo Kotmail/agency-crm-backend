@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config'
 import { AuthModule } from './auth/auth.module'
 import { OrdersModule } from './orders/orders.module'
 import { dataSourceOptions } from './database/ormconfig'
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { dataSourceOptions } from './database/ormconfig'
     AuthModule,
     OrdersModule,
     UsersModule,
+    ProjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
