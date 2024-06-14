@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module'
 import { OrdersModule } from './orders/orders.module'
 import { dataSourceOptions } from './database/ormconfig'
 import { ProjectsModule } from './projects/projects.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ProjectsModule } from './projects/projects.module';
     OrdersModule,
     UsersModule,
     ProjectsModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
