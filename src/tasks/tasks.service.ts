@@ -15,8 +15,8 @@ export class TasksService {
     private tasksRepository: Repository<Task>,
   ) {}
 
-  create(authUser: User, taskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksRepository.save({
+  async create(authUser: User, taskDto: CreateTaskDto): Promise<Task> {
+    const { id } = await this.tasksRepository.save({
       ...taskDto,
       creator: { id: taskDto.creator || authUser.id },
       project: { id: taskDto.project },
@@ -24,12 +24,27 @@ export class TasksService {
         ? taskDto.responsibleUsers.map((userId) => ({ id: userId }))
         : [],
     })
+
+    return await this.tasksRepository.findOne({
+      where: { id },
+      select: {
+        project: {
+          id: true,
+          name: true,
+        },
+      },
+      relations: {
+        creator: true,
+        project: true,
+        responsibleUsers: true,
+      },
+    })
   }
 
   async update(id: string, taskDto: UpdateTaskDto): Promise<Task> {
-    const taskData = await this.findById(id)
+    const task = await this.tasksRepository.findOneBy({ id: Number(id) })
 
-    if (!taskData) {
+    if (!task) {
       throw new NotFoundException('The task was not found')
     }
 
@@ -43,13 +58,37 @@ export class TasksService {
         : undefined,
     })
 
-    return await this.findById(id)
+    return await this.tasksRepository.findOne({
+      where: { id: Number(id) },
+      select: {
+        project: {
+          id: true,
+          name: true,
+        },
+      },
+      relations: {
+        creator: true,
+        project: true,
+        responsibleUsers: true,
+      },
+    })
   }
 
   async findAll(queryDto: QueryTasksDto): Promise<PaginatedDto<Task>> {
     const [items, totalCount] = await this.tasksRepository.findAndCount({
       order: {
         id: 'ASC',
+      },
+      select: {
+        project: {
+          id: true,
+          name: true,
+        },
+      },
+      relations: {
+        creator: true,
+        project: true,
+        responsibleUsers: true,
       },
       take: queryDto.take,
       skip: queryDto.skip,
@@ -59,7 +98,20 @@ export class TasksService {
   }
 
   async findOne(id: string): Promise<Task> {
-    const task = await this.findById(id)
+    const task = await this.tasksRepository.findOne({
+      where: { id: Number(id) },
+      select: {
+        project: {
+          id: true,
+          name: true,
+        },
+      },
+      relations: {
+        creator: true,
+        project: true,
+        responsibleUsers: true,
+      },
+    })
 
     if (!task) {
       throw new NotFoundException('The task was not found')
@@ -69,16 +121,12 @@ export class TasksService {
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    const task = await this.findById(id)
+    const task = await this.tasksRepository.findOneBy({ id: Number(id) })
 
     if (!task) {
       throw new NotFoundException('The task was not found')
     }
 
     return this.tasksRepository.delete(id)
-  }
-
-  findById(id: string): Promise<Task> {
-    return this.tasksRepository.findOneBy({ id: Number(id) })
   }
 }

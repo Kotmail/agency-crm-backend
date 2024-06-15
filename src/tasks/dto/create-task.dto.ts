@@ -7,7 +7,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator'
-import { TaskPriority, TaskStatus } from '../task.entity'
+import { TaskStatus } from '../task.entity'
+import { PriorityEnum } from 'src/shared/enums/priority.enum'
 
 export class CreateTaskDto {
   @IsString()
@@ -28,8 +29,8 @@ export class CreateTaskDto {
   status: TaskStatus
 
   @IsOptional()
-  @IsEnum(TaskPriority)
-  priority: TaskPriority
+  @IsEnum(PriorityEnum)
+  priority: PriorityEnum
 
   @IsOptional()
   @IsNumber()

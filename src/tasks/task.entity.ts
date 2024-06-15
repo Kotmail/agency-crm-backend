@@ -1,4 +1,5 @@
 import { Project } from 'src/projects/project.entity'
+import { PriorityEnum } from 'src/shared/enums/priority.enum'
 import { User } from 'src/users/user.entity'
 import {
   Column,
@@ -10,12 +11,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm'
-
-export enum TaskPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-}
 
 export enum TaskStatus {
   UNSORTED = 'unsorted',
@@ -54,20 +49,20 @@ export class Task {
 
   @Column({
     type: 'enum',
-    enum: TaskPriority,
+    enum: PriorityEnum,
     nullable: true,
   })
-  priority: TaskPriority | null
+  priority: PriorityEnum | null
 
-  @ManyToOne(() => User, (user) => user.id, { eager: true })
+  @ManyToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'creator_id' })
   creator: User
 
-  @ManyToOne(() => Project, (project) => project.id, { eager: true })
+  @ManyToOne(() => Project, (project) => project.tasks)
   @JoinColumn({ name: 'project_id' })
   project: Project
 
-  @ManyToMany(() => User, { eager: true })
+  @ManyToMany(() => User)
   @JoinTable({
     name: 'tasks_responsible_users',
     joinColumn: {

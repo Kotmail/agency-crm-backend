@@ -1,3 +1,5 @@
+import { PriorityEnum } from 'src/shared/enums/priority.enum'
+import { Task } from 'src/tasks/task.entity'
 import { User } from 'src/users/user.entity'
 import {
   Column,
@@ -7,6 +9,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
 
@@ -18,11 +21,31 @@ export class Project {
   @Column()
   name: string
 
-  @ManyToOne(() => User, (user) => user.id, { eager: true })
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  description: string
+
+  @Column({
+    type: 'date',
+    name: 'due_date',
+    nullable: true,
+  })
+  dueDate: Date | null
+
+  @Column({
+    type: 'enum',
+    enum: PriorityEnum,
+    nullable: true,
+  })
+  priority: PriorityEnum | null
+
+  @ManyToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'creator_id' })
   creator: User
 
-  @ManyToMany(() => User, { eager: true })
+  @ManyToMany(() => User)
   @JoinTable({
     name: 'projects_members',
     joinColumn: {
@@ -35,6 +58,9 @@ export class Project {
     },
   })
   members: User[]
+
+  @OneToMany(() => Task, (task) => task.project)
+  tasks: Task[]
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

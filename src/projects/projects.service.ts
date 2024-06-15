@@ -15,20 +15,31 @@ export class ProjectsService {
     private projectsRepository: Repository<Project>,
   ) {}
 
-  create(authUser: User, projectDto: CreateProjectDto): Promise<Project> {
-    return this.projectsRepository.save({
+  async create(authUser: User, projectDto: CreateProjectDto): Promise<Project> {
+    const { id } = await this.projectsRepository.save({
       ...projectDto,
       creator: { id: projectDto.creator || authUser.id },
       members: projectDto.members
         ? projectDto.members.map((userId) => ({ id: userId }))
         : [],
     })
+
+    return await this.projectsRepository.findOne({
+      where: { id },
+      relations: {
+        creator: true,
+        members: true,
+        tasks: {
+          responsibleUsers: true,
+        },
+      },
+    })
   }
 
   async update(id: string, projectDto: UpdateProjectDto): Promise<Project> {
-    const projectData = await this.findById(id)
+    const project = await this.projectsRepository.findOneBy({ id: Number(id) })
 
-    if (!projectData) {
+    if (!project) {
       throw new NotFoundException('The project was not found')
     }
 
@@ -41,13 +52,28 @@ export class ProjectsService {
         : undefined,
     })
 
-    return await this.findById(id)
+    return await this.projectsRepository.findOne({
+      where: { id: Number(id) },
+      relations: {
+        creator: true,
+        members: true,
+        tasks: {
+          responsibleUsers: true,
+        },
+      },
+    })
   }
 
   async findAll(queryDto: QueryProjectsDto): Promise<PaginatedDto<Project>> {
     const [items, totalCount] = await this.projectsRepository.findAndCount({
       order: {
         id: 'ASC',
+      },
+      relations: {
+        members: true,
+        tasks: {
+          responsibleUsers: true,
+        },
       },
       take: queryDto.take,
       skip: queryDto.skip,
@@ -57,7 +83,16 @@ export class ProjectsService {
   }
 
   async findOne(id: string): Promise<Project> {
-    const project = await this.findById(id)
+    const project = await this.projectsRepository.findOne({
+      where: { id: Number(id) },
+      relations: {
+        creator: true,
+        members: true,
+        tasks: {
+          responsibleUsers: true,
+        },
+      },
+    })
 
     if (!project) {
       throw new NotFoundException('The project was not found')
@@ -67,16 +102,12 @@ export class ProjectsService {
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    const project = await this.findById(id)
+    const project = await this.projectsRepository.findOneBy({ id: Number(id) })
 
     if (!project) {
       throw new NotFoundException('The project was not found')
     }
 
     return this.projectsRepository.delete(id)
-  }
-
-  findById(id: string): Promise<Project> {
-    return this.projectsRepository.findOneBy({ id: Number(id) })
   }
 }
