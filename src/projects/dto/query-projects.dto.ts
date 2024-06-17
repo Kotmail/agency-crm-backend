@@ -6,7 +6,7 @@ export class QueryProjectsDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  take?: number = 8
+  take?: number = 12
 
   @IsOptional()
   @Type(() => Number)

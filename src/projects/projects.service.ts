@@ -7,6 +7,7 @@ import { User } from 'src/users/user.entity'
 import { PaginatedDto } from 'src/shared/dto/paginated.dto'
 import { QueryProjectsDto } from './dto/query-projects.dto'
 import { UpdateProjectDto } from './dto/update-project.dto'
+import { TaskStatus } from 'src/tasks/task.entity'
 
 @Injectable()
 export class ProjectsService {
@@ -65,19 +66,22 @@ export class ProjectsService {
   }
 
   async findAll(queryDto: QueryProjectsDto): Promise<PaginatedDto<Project>> {
-    const [items, totalCount] = await this.projectsRepository.findAndCount({
-      order: {
-        id: 'ASC',
-      },
-      relations: {
-        members: true,
-        tasks: {
-          responsibleUsers: true,
-        },
-      },
-      take: queryDto.take,
-      skip: queryDto.skip,
-    })
+    const [items, totalCount] = await this.projectsRepository
+      .createQueryBuilder('project')
+      .loadRelationCountAndMap('project.taskTotal', 'project.tasks')
+      .loadRelationCountAndMap(
+        'project.taskCompleted',
+        'project.tasks',
+        'task',
+        (qb) =>
+          qb.where('task.status = :status', {
+            status: TaskStatus.COMPLETED,
+          }),
+      )
+      .orderBy('project.createdAt', 'DESC')
+      .take(queryDto.take)
+      .skip(queryDto.skip)
+      .getManyAndCount()
 
     return { items, totalCount }
   }

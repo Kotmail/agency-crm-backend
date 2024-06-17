@@ -64,4 +64,8 @@ export class Project {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
+
+  taskTotal?: number
+
+  taskCompleted?: number
 }
