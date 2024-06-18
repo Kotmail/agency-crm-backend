@@ -68,6 +68,8 @@ export class ProjectsService {
   async findAll(queryDto: QueryProjectsDto): Promise<PaginatedDto<Project>> {
     const [items, totalCount] = await this.projectsRepository
       .createQueryBuilder('project')
+      .innerJoinAndSelect('project.creator', 'creator')
+      .innerJoinAndSelect('project.members', 'member')
       .loadRelationCountAndMap('project.taskTotal', 'project.tasks')
       .loadRelationCountAndMap(
         'project.taskCompleted',
