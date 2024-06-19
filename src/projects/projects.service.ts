@@ -19,9 +19,9 @@ export class ProjectsService {
   async create(authUser: User, projectDto: CreateProjectDto): Promise<Project> {
     const { id } = await this.projectsRepository.save({
       ...projectDto,
-      creator: { id: projectDto.creator || authUser.id },
-      members: projectDto.members
-        ? projectDto.members.map((userId) => ({ id: userId }))
+      creator: { id: projectDto.creatorId || authUser.id },
+      members: projectDto.memberIds
+        ? projectDto.memberIds.map((userId) => ({ id: userId }))
         : [],
     })
 
@@ -47,9 +47,9 @@ export class ProjectsService {
     await this.projectsRepository.save({
       id: Number(id),
       ...projectDto,
-      creator: projectDto.creator ? { id: projectDto.creator } : undefined,
-      members: projectDto.members
-        ? projectDto.members.map((userId) => ({ id: userId }))
+      creator: projectDto.creatorId ? { id: projectDto.creatorId } : undefined,
+      members: projectDto.memberIds
+        ? projectDto.memberIds.map((userId) => ({ id: userId }))
         : undefined,
     })
 
@@ -68,8 +68,8 @@ export class ProjectsService {
   async findAll(queryDto: QueryProjectsDto): Promise<PaginatedDto<Project>> {
     const [items, totalCount] = await this.projectsRepository
       .createQueryBuilder('project')
-      .innerJoinAndSelect('project.creator', 'creator')
-      .innerJoinAndSelect('project.members', 'member')
+      .leftJoinAndSelect('project.creator', 'creator')
+      .leftJoinAndSelect('project.members', 'members')
       .loadRelationCountAndMap('project.taskTotal', 'project.tasks')
       .loadRelationCountAndMap(
         'project.taskCompleted',

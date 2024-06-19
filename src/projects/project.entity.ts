@@ -28,7 +28,7 @@ export class Project {
   description: string
 
   @Column({
-    type: 'date',
+    type: 'timestamp',
     name: 'due_date',
     nullable: true,
   })

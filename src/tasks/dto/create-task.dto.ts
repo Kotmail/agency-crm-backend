@@ -34,13 +34,13 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsNumber()
-  creator: number
+  creatorId: number
 
   @IsNumber()
-  project: number
+  projectId: number
 
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  responsibleUsers: number[]
+  responsibleUserIds: number[]
 }

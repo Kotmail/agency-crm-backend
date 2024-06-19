@@ -18,10 +18,10 @@ export class TasksService {
   async create(authUser: User, taskDto: CreateTaskDto): Promise<Task> {
     const { id } = await this.tasksRepository.save({
       ...taskDto,
-      creator: { id: taskDto.creator || authUser.id },
-      project: { id: taskDto.project },
-      responsibleUsers: taskDto.responsibleUsers
-        ? taskDto.responsibleUsers.map((userId) => ({ id: userId }))
+      creator: { id: taskDto.creatorId || authUser.id },
+      project: { id: taskDto.projectId },
+      responsibleUsers: taskDto.responsibleUserIds
+        ? taskDto.responsibleUserIds.map((userId) => ({ id: userId }))
         : [],
     })
 
@@ -51,10 +51,10 @@ export class TasksService {
     await this.tasksRepository.save({
       id: Number(id),
       ...taskDto,
-      creator: taskDto.creator ? { id: taskDto.creator } : undefined,
-      project: taskDto.project ? { id: taskDto.project } : undefined,
-      responsibleUsers: taskDto.responsibleUsers
-        ? taskDto.responsibleUsers.map((userId) => ({ id: userId }))
+      creator: taskDto.creatorId ? { id: taskDto.creatorId } : undefined,
+      project: taskDto.projectId ? { id: taskDto.projectId } : undefined,
+      responsibleUsers: taskDto.responsibleUserIds
+        ? taskDto.responsibleUserIds.map((userId) => ({ id: userId }))
         : undefined,
     })
 

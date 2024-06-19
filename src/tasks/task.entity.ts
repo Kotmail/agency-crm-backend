@@ -34,7 +34,7 @@ export class Task {
   description: string | null
 
   @Column({
-    type: 'date',
+    type: 'timestamp',
     name: 'due_date',
     nullable: true,
   })

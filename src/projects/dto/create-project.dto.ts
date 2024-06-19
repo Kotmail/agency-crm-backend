@@ -29,10 +29,10 @@ export class CreateProjectDto {
 
   @IsOptional()
   @IsNumber()
-  creator: number
+  creatorId: number
 
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  members: number[]
+  memberIds: number[]
 }
