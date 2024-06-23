@@ -37,6 +37,10 @@ export class Task {
     type: 'timestamp',
     name: 'due_date',
     nullable: true,
+    transformer: {
+      to: (value: Date | null) => value,
+      from: (value: string | null) => (value ? new Date(`${value}Z`) : null),
+    },
   })
   dueDate: Date | null
 
