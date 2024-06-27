@@ -11,7 +11,8 @@ export default setSeederFactory(User, () => {
 
   user.login = faker.internet.userName()
   user.email = faker.internet.email()
-  user.fullName = faker.person.fullName({ sex })
+  user.firstName = faker.person.firstName(sex)
+  user.lastName = faker.person.lastName(sex)
   user.role = userRoles[currentRoleIdx]
   user.password = faker.internet.password()
 

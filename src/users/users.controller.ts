@@ -79,8 +79,8 @@ export class UsersController {
     description: 'Users were successfully received.',
   })
   @Get()
-  getAll(@CurrentUser() authUser: User, @Query() queryDto: QueryUsersDto) {
-    return this.usersService.findAll(authUser, queryDto)
+  getAll(@Query() queryDto: QueryUsersDto) {
+    return this.usersService.findAll(queryDto)
   }
 
   @ApiOperation({ summary: 'Get a specific user.' })

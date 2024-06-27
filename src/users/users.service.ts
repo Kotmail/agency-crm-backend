@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User, UserRole } from './user.entity'
-import { DeleteResult, In, Not, Repository } from 'typeorm'
+import { DeleteResult, Not, Repository } from 'typeorm'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { QueryUsersDto } from './dto/query-users.dto'
@@ -83,23 +83,21 @@ export class UsersService {
     return await this.usersRepository.findOneBy({ id })
   }
 
-  async findAll(
-    authUser: User,
-    queryDto: QueryUsersDto,
-  ): Promise<PaginatedDto<User>> {
-    const [items, totalCount] = await this.usersRepository.findAndCount({
-      where: {
-        role:
-          authUser.role === UserRole.EXECUTOR
-            ? UserRole.MANAGER
-            : In(queryDto.role || Object.values(UserRole)),
-      },
-      order: {
-        id: 'ASC',
-      },
-      take: queryDto.take,
-      skip: queryDto.skip,
-    })
+  async findAll(queryDto: QueryUsersDto): Promise<PaginatedDto<User>> {
+    const usersQuery = this.usersRepository
+      .createQueryBuilder()
+      .orderBy('id', 'ASC')
+      .take(queryDto.take)
+      .skip(queryDto.skip)
+
+    if (queryDto.q) {
+      usersQuery.where(
+        "CONCAT(first_name, ' ', last_name) ILIKE :query OR CONCAT(last_name, ' ', first_name) ILIKE :query OR email ILIKE :query",
+        { query: `%${queryDto.q}%` },
+      )
+    }
+
+    const [items, totalCount] = await usersQuery.getManyAndCount()
 
     return { items, totalCount }
   }
@@ -141,7 +139,8 @@ export class UsersService {
         id: true,
         login: true,
         email: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
         role: true,
         password: selectPassword,
       },
@@ -157,7 +156,8 @@ export class UsersService {
         id: true,
         login: true,
         email: true,
-        fullName: true,
+        firstName: true,
+        lastName: true,
         role: true,
         password: selectPassword,
       },

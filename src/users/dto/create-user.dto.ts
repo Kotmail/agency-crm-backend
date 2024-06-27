@@ -30,12 +30,20 @@ export class CreateUserDto {
   email: string
 
   @ApiProperty({
-    example: 'Allen Brown',
-    description: 'Fullname of user.',
+    example: 'Allen',
+    description: 'Name of user.',
   })
   @IsString()
   @IsNotEmpty()
-  fullName: string
+  firstName: string
+
+  @ApiProperty({
+    example: 'Brown',
+    description: 'Surname of user.',
+  })
+  @IsString()
+  @IsNotEmpty()
+  lastName: string
 
   @ApiPropertyOptional({
     enum: UserRole,

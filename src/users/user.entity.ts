@@ -33,11 +33,18 @@ export class User {
   email: string
 
   @ApiProperty({
-    example: 'Allen Brown',
-    description: 'Fullname of user.',
+    example: 'Allen',
+    description: 'Name of user.',
   })
-  @Column({ name: 'full_name' })
-  fullName: string
+  @Column({ name: 'first_name' })
+  firstName: string
+
+  @ApiProperty({
+    example: 'Brown',
+    description: 'Surname of user.',
+  })
+  @Column({ name: 'last_name' })
+  lastName: string
 
   @ApiProperty({
     enum: UserRole,

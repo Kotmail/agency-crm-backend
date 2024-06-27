@@ -2,7 +2,7 @@ import { Seeder, SeederFactoryManager } from 'typeorm-extension'
 import { DataSource } from 'typeorm'
 import { User, UserRole } from 'src/users/user.entity'
 import { Order } from 'src/orders/order.entity'
-import { faker } from '@faker-js/faker'
+import { fakerRU as faker } from '@faker-js/faker'
 
 export default class InitialSeeder implements Seeder {
   public groupUsersByRole(users: User[]): Partial<Record<UserRole, User[]>> {
@@ -36,21 +36,24 @@ export default class InitialSeeder implements Seeder {
       {
         login: 'admin-login',
         email: 'admin@example.com',
-        fullName: 'Сомов Кирилл Михайлович',
+        firstName: faker.person.firstName('male'),
+        lastName: faker.person.lastName('male'),
         role: UserRole.ADMIN,
         password: 'adminDemoPassword',
       },
       {
         login: 'manager-login',
         email: 'manager@example.com',
-        fullName: 'Белякова Ксения Данииловна',
+        firstName: faker.person.firstName('female'),
+        lastName: faker.person.lastName('female'),
         role: UserRole.MANAGER,
         password: 'managerDemoPassword',
       },
       {
         login: 'executor-login',
         email: 'executor@example.com',
-        fullName: 'Максимов Глеб Павлович',
+        firstName: faker.person.firstName('male'),
+        lastName: faker.person.lastName('male'),
         password: 'executorDemoPassword',
       },
     ]
