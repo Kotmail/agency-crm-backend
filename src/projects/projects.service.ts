@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Project } from './project.entity'
 import { DeleteResult, Repository } from 'typeorm'
 import { CreateProjectDto } from './dto/create-project.dto'
-import { User } from 'src/users/user.entity'
 import { PaginatedDto } from 'src/shared/dto/paginated.dto'
 import { QueryProjectsDto } from './dto/query-projects.dto'
 import { UpdateProjectDto } from './dto/update-project.dto'
@@ -16,10 +15,10 @@ export class ProjectsService {
     private projectsRepository: Repository<Project>,
   ) {}
 
-  async create(authUser: User, projectDto: CreateProjectDto): Promise<Project> {
+  async create(projectDto: CreateProjectDto): Promise<Project> {
     const { id } = await this.projectsRepository.save({
       ...projectDto,
-      creator: { id: projectDto.creatorId || authUser.id },
+      creator: { id: projectDto.creator },
       members: projectDto.memberIds
         ? projectDto.memberIds.map((userId) => ({ id: userId }))
         : [],
@@ -47,7 +46,7 @@ export class ProjectsService {
     await this.projectsRepository.save({
       id: Number(id),
       ...projectDto,
-      creator: projectDto.creatorId ? { id: projectDto.creatorId } : undefined,
+      creator: projectDto.creator ? { id: projectDto.creator } : undefined,
       members: projectDto.memberIds
         ? projectDto.memberIds.map((userId) => ({ id: userId }))
         : undefined,

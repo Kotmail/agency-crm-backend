@@ -90,6 +90,10 @@ export class UsersService {
       .take(queryDto.take)
       .skip(queryDto.skip)
 
+    if (queryDto.role) {
+      usersQuery.where('role IN (:...roles)', { roles: queryDto.role })
+    }
+
     if (queryDto.q) {
       usersQuery.where(
         "CONCAT(first_name, ' ', last_name) ILIKE :query OR CONCAT(last_name, ' ', first_name) ILIKE :query OR email ILIKE :query",

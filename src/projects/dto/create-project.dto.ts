@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer'
 import {
   IsArray,
   IsDateString,
@@ -27,9 +28,11 @@ export class CreateProjectDto {
   @IsEnum(PriorityEnum)
   priority: PriorityEnum
 
-  @IsOptional()
   @IsNumber()
-  creatorId: number
+  @Transform(({ value }) =>
+    typeof value === 'object' && value.id ? value.id : value,
+  )
+  creator: number
 
   @IsOptional()
   @IsArray()
