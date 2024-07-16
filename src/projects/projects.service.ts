@@ -19,8 +19,8 @@ export class ProjectsService {
     const { id } = await this.projectsRepository.save({
       ...projectDto,
       creator: { id: projectDto.creator },
-      members: projectDto.memberIds
-        ? projectDto.memberIds.map((userId) => ({ id: userId }))
+      members: projectDto.members
+        ? projectDto.members.map((userId) => ({ id: userId }))
         : [],
     })
 
@@ -47,8 +47,8 @@ export class ProjectsService {
       id: Number(id),
       ...projectDto,
       creator: projectDto.creator ? { id: projectDto.creator } : undefined,
-      members: projectDto.memberIds
-        ? projectDto.memberIds.map((userId) => ({ id: userId }))
+      members: projectDto.members
+        ? projectDto.members.map((userId) => ({ id: userId }))
         : undefined,
     })
 

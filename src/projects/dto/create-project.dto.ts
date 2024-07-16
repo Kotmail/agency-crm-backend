@@ -9,6 +9,7 @@ import {
   IsString,
 } from 'class-validator'
 import { PriorityEnum } from 'src/shared/enums/priority.enum'
+import { User } from 'src/users/user.entity'
 
 export class CreateProjectDto {
   @IsString()
@@ -37,5 +38,10 @@ export class CreateProjectDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  memberIds: number[]
+  @Transform(({ value }) =>
+    value.map((item: number | User) =>
+      typeof item === 'object' ? item.id : item,
+    ),
+  )
+  members: number[]
 }
