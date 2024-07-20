@@ -5,6 +5,9 @@
 /dist
 /node_modules
 
+# static files
+/uploads
+
 # Logs
 logs
 *.log

@@ -58,6 +58,14 @@ export class User {
   })
   role: UserRole
 
+  @ApiProperty({
+    nullable: true,
+    example: 'ce2f2bab-d22b-405f-aabd-7dbf3562bbd2.jpeg',
+    description: 'Avatar of user.',
+  })
+  @Column({ nullable: true })
+  avatar: string | null
+
   @Column({ select: false })
   password: string
 

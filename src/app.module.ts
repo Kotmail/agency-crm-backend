@@ -7,11 +7,17 @@ import { ConfigModule } from '@nestjs/config'
 import { AuthModule } from './auth/auth.module'
 import { OrdersModule } from './orders/orders.module'
 import { dataSourceOptions } from './database/ormconfig'
-import { ProjectsModule } from './projects/projects.module';
-import { TasksModule } from './tasks/tasks.module';
+import { ProjectsModule } from './projects/projects.module'
+import { TasksModule } from './tasks/tasks.module'
+import { ServeStaticModule } from '@nestjs/serve-static'
+import { join } from 'path'
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads/',
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),

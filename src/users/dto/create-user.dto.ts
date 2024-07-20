@@ -62,4 +62,12 @@ export class CreateUserDto {
   @MinLength(10)
   @Exclude({ toPlainOnly: true })
   password: string
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Image file to upload',
+    required: false,
+  })
+  avatar: string
 }

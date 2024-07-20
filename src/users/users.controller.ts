@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
@@ -25,16 +26,43 @@ import { QueryUsersDto } from './dto/query-users.dto'
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiPayloadTooLargeResponse,
   ApiTags,
   ApiUnauthorizedResponse,
+  ApiUnsupportedMediaTypeResponse,
 } from '@nestjs/swagger'
 import { ApiPagintaedResponse } from 'src/shared/decorators/api-paginated-response'
+import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { checkFileType } from 'src/shared/helpers/checkFileType'
+import { MimeTypes } from 'src/shared/enums/mime-types.enum'
+import { diskStorage } from 'multer'
+import { v4 } from 'uuid'
+import { extension } from 'mime-types'
+import { mkdirSync } from 'fs'
+
+const avatarInterceptorOptions: MulterOptions = {
+  limits: { fileSize: 1 * 1024 * 1024 },
+  fileFilter: (_, file, cb) =>
+    checkFileType(file, cb, [MimeTypes.jpg, MimeTypes.png, MimeTypes.webp]),
+  storage: diskStorage({
+    destination: (_, __, cb) => {
+      const path = './uploads/avatars/'
+
+      mkdirSync(path, { recursive: true })
+
+      return cb(null, path)
+    },
+    filename: (_, file, cb) => cb(null, `${v4()}.${extension(file.mimetype)}`),
+  }),
+}
 
 @ApiTags('Users')
 @ApiBearerAuth('Auth')
@@ -46,18 +74,30 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: 'Create a new user.' })
+  @ApiConsumes('multipart/form-data')
   @ApiCreatedResponse({
     type: User,
     description: 'A new user has been successfully created.',
   })
   @ApiBadRequestResponse({ description: 'Bad Request.' })
+  @ApiPayloadTooLargeResponse({ description: 'Payload too large.' })
+  @ApiUnsupportedMediaTypeResponse({ description: 'Unsupported media type.' })
   @Post()
+  @UseInterceptors(FileInterceptor('avatar', avatarInterceptorOptions))
   @Roles(UserRole.ADMIN)
-  create(@Body() userDto: CreateUserDto) {
-    return this.usersService.create(userDto)
+  create(
+    @UploadedFile()
+    avatar: Express.Multer.File,
+    @Body() userDto: CreateUserDto,
+  ) {
+    return this.usersService.create({
+      ...userDto,
+      avatar: avatar ? avatar.filename : null,
+    })
   }
 
   @ApiOperation({ summary: 'Update a specific user.' })
+  @ApiConsumes('multipart/form-data')
   @ApiOkResponse({
     type: User,
     description: 'The user has been successfully updated.',
@@ -65,13 +105,21 @@ export class UsersController {
   @ApiBadRequestResponse({ description: 'Bad Request.' })
   @ApiNotFoundResponse({ description: 'The user was not found.' })
   @ApiForbiddenResponse({ description: 'Permissions error.' })
+  @ApiPayloadTooLargeResponse({ description: 'Payload too large.' })
+  @ApiUnsupportedMediaTypeResponse({ description: 'Unsupported media type.' })
   @Put(':id')
+  @UseInterceptors(FileInterceptor('avatar', avatarInterceptorOptions))
   update(
     @CurrentUser() authUser: User,
     @Param('id') id: string,
+    @UploadedFile()
+    avatar: Express.Multer.File,
     @Body() userDto: UpdateUserDto,
   ) {
-    return this.usersService.update(authUser, Number(id), userDto)
+    return this.usersService.update(authUser, Number(id), {
+      ...userDto,
+      avatar: avatar ? avatar.filename : undefined,
+    })
   }
 
   @ApiOperation({ summary: 'Get all users.' })
