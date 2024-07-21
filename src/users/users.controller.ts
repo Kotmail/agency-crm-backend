@@ -47,6 +47,8 @@ import { diskStorage } from 'multer'
 import { v4 } from 'uuid'
 import { extension } from 'mime-types'
 import { mkdirSync } from 'fs'
+import * as sharp from 'sharp'
+import { ResizeImagePipe } from 'src/shared/pipes/resize-image.pipe'
 
 const avatarInterceptorOptions: MulterOptions = {
   limits: { fileSize: 1 * 1024 * 1024 },
@@ -62,6 +64,18 @@ const avatarInterceptorOptions: MulterOptions = {
     },
     filename: (_, file, cb) => cb(null, `${v4()}.${extension(file.mimetype)}`),
   }),
+}
+
+const avatarResizeOptions: sharp.ResizeOptions = {
+  width: 180,
+  height: 180,
+  fit: 'cover',
+  background: {
+    r: 255,
+    g: 255,
+    b: 255,
+    alpha: 1,
+  },
 }
 
 @ApiTags('Users')
@@ -86,7 +100,7 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('avatar', avatarInterceptorOptions))
   @Roles(UserRole.ADMIN)
   create(
-    @UploadedFile()
+    @UploadedFile(new ResizeImagePipe(avatarResizeOptions))
     avatar: Express.Multer.File,
     @Body() userDto: CreateUserDto,
   ) {
@@ -112,7 +126,7 @@ export class UsersController {
   update(
     @CurrentUser() authUser: User,
     @Param('id') id: string,
-    @UploadedFile()
+    @UploadedFile(new ResizeImagePipe(avatarResizeOptions))
     avatar: Express.Multer.File,
     @Body() userDto: UpdateUserDto,
   ) {
