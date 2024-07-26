@@ -63,6 +63,7 @@ export class CreateUserDto {
   @Exclude({ toPlainOnly: true })
   password: string
 
+  @IsOptional()
   @ApiProperty({
     type: 'string',
     format: 'binary',

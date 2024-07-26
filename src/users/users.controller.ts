@@ -51,7 +51,7 @@ import * as sharp from 'sharp'
 import { ResizeImagePipe } from 'src/shared/pipes/resize-image.pipe'
 
 const avatarInterceptorOptions: MulterOptions = {
-  limits: { fileSize: 1 * 1024 * 1024 },
+  limits: { fileSize: 0.5 * 1024 * 1024 },
   fileFilter: (_, file, cb) =>
     checkFileType(file, cb, [MimeTypes.jpg, MimeTypes.png, MimeTypes.webp]),
   storage: diskStorage({
@@ -132,7 +132,7 @@ export class UsersController {
   ) {
     return this.usersService.update(authUser, Number(id), {
       ...userDto,
-      avatar: avatar ? avatar.filename : undefined,
+      avatar: avatar ? avatar.filename : userDto.avatar ? null : undefined,
     })
   }
 
