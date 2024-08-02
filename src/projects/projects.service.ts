@@ -93,9 +93,6 @@ export class ProjectsService {
       relations: {
         creator: true,
         members: true,
-        tasks: {
-          responsibleUsers: true,
-        },
       },
     })
 

@@ -76,18 +76,14 @@ export class TasksService {
 
   async findAll(queryDto: QueryTasksDto): Promise<PaginatedDto<Task>> {
     const [items, totalCount] = await this.tasksRepository.findAndCount({
+      where: {
+        project: queryDto.projectId ? { id: queryDto?.projectId } : undefined,
+      },
       order: {
         id: 'ASC',
       },
-      select: {
-        project: {
-          id: true,
-          name: true,
-        },
-      },
       relations: {
         creator: true,
-        project: true,
         responsibleUsers: true,
       },
       take: queryDto.take,
