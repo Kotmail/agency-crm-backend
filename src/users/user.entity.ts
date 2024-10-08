@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Order } from 'src/orders/order.entity'
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -68,7 +67,4 @@ export class User {
 
   @Column({ select: false })
   password: string
-
-  @OneToMany(() => Order, (order) => order.creator)
-  orders: Order[]
 }

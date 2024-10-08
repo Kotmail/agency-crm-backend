@@ -5,7 +5,6 @@ import { UsersModule } from './users/users.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule } from '@nestjs/config'
 import { AuthModule } from './auth/auth.module'
-import { OrdersModule } from './orders/orders.module'
 import { dataSourceOptions } from './database/ormconfig'
 import { ProjectsModule } from './projects/projects.module'
 import { TasksModule } from './tasks/tasks.module'
@@ -23,7 +22,6 @@ import { join } from 'path'
     }),
     TypeOrmModule.forRoot(dataSourceOptions),
     AuthModule,
-    OrdersModule,
     UsersModule,
     ProjectsModule,
     TasksModule,

@@ -1,7 +1,6 @@
 import { Seeder, SeederFactoryManager } from 'typeorm-extension'
 import { DataSource } from 'typeorm'
 import { User, UserRole } from 'src/users/user.entity'
-import { Order } from 'src/orders/order.entity'
 import { fakerRU as faker } from '@faker-js/faker'
 
 export default class InitialSeeder implements Seeder {
@@ -30,7 +29,6 @@ export default class InitialSeeder implements Seeder {
     // Creating specific base users.
 
     const usersRepository = dataSource.getRepository(User)
-    const ordersRepository = dataSource.getRepository(Order)
 
     const baseUsersData: Partial<User>[] = [
       {
@@ -60,26 +58,10 @@ export default class InitialSeeder implements Seeder {
 
     const users = await usersRepository.save(baseUsersData)
 
-    // Bulk generation of random orders and user data.
+    // Bulk generation of random user data.
 
     const userFactory = factoryManager.get(User)
-    const orderFactory = factoryManager.get(Order)
 
-    const mergedUsers = users.concat(await userFactory.saveMany(17))
-    const groupedUsersByRole = this.groupUsersByRole(mergedUsers)
-
-    const orders = await Promise.all(
-      Array(50)
-        .fill('')
-        .map(
-          async () =>
-            await orderFactory.make({
-              creator: faker.helpers.arrayElement(groupedUsersByRole.manager),
-              executor: faker.helpers.arrayElement(groupedUsersByRole.executor),
-            }),
-        ),
-    )
-
-    await ordersRepository.save(orders)
+    users.concat(await userFactory.saveMany(17))
   }
 }
