@@ -10,6 +10,8 @@ import { ProjectsModule } from './projects/projects.module'
 import { TasksModule } from './tasks/tasks.module'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
+import { ChecklistsModule } from './checklists/checklists.module';
+import { ChecklistItemsModule } from './checklist-items/checklist-items.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { join } from 'path'
     UsersModule,
     ProjectsModule,
     TasksModule,
+    ChecklistsModule,
+    ChecklistItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
