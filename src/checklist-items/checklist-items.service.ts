@@ -26,12 +26,21 @@ export class ChecklistItemsService {
     })
   }
 
+  getAll(id: string): Promise<ChecklistItem[]> {
+    return this.checklistItemsRepository.find({
+      where: {
+        checklist: { id: Number(id) },
+      },
+      order: { id: 'ASC' },
+    })
+  }
+
   async update(
-    id: string,
+    itemId: string,
     dto: UpdateChecklistItemDto,
   ): Promise<ChecklistItem> {
     const checklistItem = await this.checklistItemsRepository.findOneBy({
-      id: Number(id),
+      id: Number(itemId),
     })
 
     if (!checklistItem) {
@@ -39,12 +48,12 @@ export class ChecklistItemsService {
     }
 
     await this.checklistItemsRepository.save({
-      id: Number(id),
+      id: Number(itemId),
       ...dto,
     })
 
     return await this.checklistItemsRepository.findOne({
-      where: { id: Number(id) },
+      where: { id: Number(itemId) },
     })
   }
 

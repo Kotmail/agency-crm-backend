@@ -22,7 +22,9 @@ export class ChecklistItem {
   })
   isDone: boolean = false
 
-  @ManyToOne(() => Checklist, (checklist) => checklist.items)
+  @ManyToOne(() => Checklist, (checklist) => checklist.items, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'checklist_id' })
   checklist: Checklist
 }
