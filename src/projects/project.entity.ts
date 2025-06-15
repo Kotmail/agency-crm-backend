@@ -1,5 +1,5 @@
+import { Board } from 'src/boards/board.entity'
 import { PriorityEnum } from 'src/shared/enums/priority.enum'
-import { Task } from 'src/tasks/task.entity'
 import { User } from 'src/users/user.entity'
 import {
   Column,
@@ -63,8 +63,10 @@ export class Project {
   })
   members: User[]
 
-  @OneToMany(() => Task, (task) => task.project)
-  tasks: Task[]
+  @OneToMany(() => Board, (board) => board.project, {
+    cascade: ['insert'],
+  })
+  boards: Board[]
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

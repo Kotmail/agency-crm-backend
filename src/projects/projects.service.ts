@@ -1,12 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Project } from './project.entity'
 import { DeleteResult, Repository } from 'typeorm'
+import { Project } from './project.entity'
+import { Board } from 'src/boards/board.entity'
+import { BoardStatus } from 'src/board-statuses/board-status.entity'
 import { CreateProjectDto } from './dto/create-project.dto'
-import { PaginatedDto } from 'src/shared/dto/paginated.dto'
-import { QueryProjectsDto } from './dto/query-projects.dto'
 import { UpdateProjectDto } from './dto/update-project.dto'
-import { TaskStatus } from 'src/tasks/task.entity'
+import { QueryProjectsDto } from './dto/query-projects.dto'
+import { PaginatedDto } from 'src/shared/dto/paginated.dto'
 
 @Injectable()
 export class ProjectsService {
@@ -16,12 +17,20 @@ export class ProjectsService {
   ) {}
 
   async create(projectDto: CreateProjectDto): Promise<Project> {
+    const boardStatus = new BoardStatus()
+    boardStatus.name = 'board_status_default_name'
+
+    const board = new Board()
+    board.name = 'board_default_name'
+    board.statuses = [boardStatus]
+
     const { id } = await this.projectsRepository.save({
       ...projectDto,
       creator: { id: projectDto.creator },
       members: projectDto.members
         ? projectDto.members.map((userId) => ({ id: userId }))
         : [],
+      boards: [board],
     })
 
     return await this.projectsRepository.findOne({
@@ -29,87 +38,70 @@ export class ProjectsService {
       relations: {
         creator: true,
         members: true,
-        tasks: {
-          responsibleUsers: true,
-        },
       },
     })
   }
 
-  async update(id: string, projectDto: UpdateProjectDto): Promise<Project> {
-    const project = await this.projectsRepository.findOneBy({ id: Number(id) })
+  async update(id: number, projectDto: UpdateProjectDto): Promise<Project> {
+    try {
+      await this.projectsRepository.findOneByOrFail({ id })
 
-    if (!project) {
-      throw new NotFoundException('The project was not found')
-    }
+      await this.projectsRepository.save({
+        id,
+        ...projectDto,
+        creator: projectDto.creator ? { id: projectDto.creator } : undefined,
+        members: projectDto.members
+          ? projectDto.members.map((userId) => ({ id: userId }))
+          : undefined,
+      })
 
-    await this.projectsRepository.save({
-      id: Number(id),
-      ...projectDto,
-      creator: projectDto.creator ? { id: projectDto.creator } : undefined,
-      members: projectDto.members
-        ? projectDto.members.map((userId) => ({ id: userId }))
-        : undefined,
-    })
-
-    return await this.projectsRepository.findOne({
-      where: { id: Number(id) },
-      relations: {
-        creator: true,
-        members: true,
-        tasks: {
-          responsibleUsers: true,
+      return await this.projectsRepository.findOne({
+        where: { id },
+        relations: {
+          creator: true,
+          members: true,
         },
-      },
-    })
+      })
+    } catch {
+      throw new NotFoundException(`The project with ID ${id} does not exist`)
+    }
   }
 
   async findAll(queryDto: QueryProjectsDto): Promise<PaginatedDto<Project>> {
-    const [items, totalCount] = await this.projectsRepository
-      .createQueryBuilder('project')
-      .leftJoinAndSelect('project.creator', 'creator')
-      .leftJoinAndSelect('project.members', 'members')
-      .loadRelationCountAndMap('project.taskTotal', 'project.tasks')
-      .loadRelationCountAndMap(
-        'project.taskCompleted',
-        'project.tasks',
-        'task',
-        (qb) =>
-          qb.where('task.status = :status', {
-            status: TaskStatus.COMPLETED,
-          }),
-      )
-      .orderBy('project.createdAt', 'DESC')
-      .take(queryDto.take)
-      .skip(queryDto.skip)
-      .getManyAndCount()
+    const [items, totalCount] = await this.projectsRepository.findAndCount({
+      relations: {
+        creator: true,
+        members: true,
+      },
+      order: { createdAt: 'DESC' },
+      take: queryDto.take,
+      skip: queryDto.skip,
+    })
 
     return { items, totalCount }
   }
 
-  async findOne(id: string): Promise<Project> {
-    const project = await this.projectsRepository.findOne({
-      where: { id: Number(id) },
-      relations: {
-        creator: true,
-        members: true,
-      },
-    })
-
-    if (!project) {
-      throw new NotFoundException('The project was not found')
+  async findOne(id: number): Promise<Project> {
+    try {
+      return await this.projectsRepository.findOneOrFail({
+        where: { id },
+        relations: {
+          creator: true,
+          members: true,
+        },
+      })
+    } catch {
+      throw new NotFoundException(`The project with ID ${id} does not exist`)
     }
-
-    return project
   }
 
-  async delete(id: string): Promise<DeleteResult> {
-    const project = await this.projectsRepository.findOneBy({ id: Number(id) })
+  async delete(id: number): Promise<DeleteResult> {
+    try {
+      await this.projectsRepository.findOneByOrFail({ id })
 
-    if (!project) {
-      throw new NotFoundException('The project was not found')
+      return await this.projectsRepository.delete(id)
+    } catch {
+      throw new NotFoundException(`The project with ID ${id} does not exist`)
     }
-
-    return this.projectsRepository.delete(id)
   }
 }

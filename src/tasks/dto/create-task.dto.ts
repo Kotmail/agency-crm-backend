@@ -47,6 +47,12 @@ export class CreateTaskDto {
   )
   project: number
 
+  @IsNumber()
+  @Transform(({ value }) =>
+    typeof value === 'object' && value.id ? value.id : value,
+  )
+  boardStatus: number
+
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })

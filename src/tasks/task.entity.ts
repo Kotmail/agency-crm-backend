@@ -1,4 +1,4 @@
-import { Project } from 'src/projects/project.entity'
+import { BoardStatus } from 'src/board-statuses/board-status.entity'
 import { PriorityEnum } from 'src/shared/enums/priority.enum'
 import { User } from 'src/users/user.entity'
 import {
@@ -62,9 +62,11 @@ export class Task {
   @JoinColumn({ name: 'creator_id' })
   creator: User
 
-  @ManyToOne(() => Project, (project) => project.tasks)
-  @JoinColumn({ name: 'project_id' })
-  project: Project
+  @ManyToOne(() => BoardStatus, (boardStatus) => boardStatus.tasks, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'board_status_id' })
+  boardStatus: BoardStatus
 
   @ManyToMany(() => User)
   @JoinTable({

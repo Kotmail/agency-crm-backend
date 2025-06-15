@@ -12,6 +12,8 @@ import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
 import { ChecklistsModule } from './checklists/checklists.module';
 import { ChecklistItemsModule } from './checklist-items/checklist-items.module';
+import { BoardsModule } from './boards/boards.module';
+import { BoardStatusesModule } from './board-statuses/board-statuses.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { ChecklistItemsModule } from './checklist-items/checklist-items.module';
     TasksModule,
     ChecklistsModule,
     ChecklistItemsModule,
+    BoardsModule,
+    BoardStatusesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

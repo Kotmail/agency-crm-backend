@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Task } from './task.entity'
-import { DeleteResult, Repository } from 'typeorm'
+import { DeleteResult, In, Repository } from 'typeorm'
 import { PaginatedDto } from 'src/shared/dto/paginated.dto'
 import { QueryTasksDto } from './dto/query-tasks.dto'
 import { User } from 'src/users/user.entity'
@@ -20,6 +20,7 @@ export class TasksService {
       ...taskDto,
       creator: { id: taskDto.creator || authUser.id },
       project: { id: taskDto.project },
+      boardStatus: { id: taskDto.boardStatus },
       responsibleUsers: taskDto.responsibleUsers
         ? taskDto.responsibleUsers.map((userId) => ({ id: userId }))
         : [],
@@ -27,15 +28,8 @@ export class TasksService {
 
     return await this.tasksRepository.findOne({
       where: { id },
-      select: {
-        project: {
-          id: true,
-          name: true,
-        },
-      },
       relations: {
         creator: true,
-        project: true,
         responsibleUsers: true,
       },
     })
@@ -53,6 +47,9 @@ export class TasksService {
       ...taskDto,
       creator: taskDto.creator ? { id: taskDto.creator } : undefined,
       project: taskDto.project ? { id: taskDto.project } : undefined,
+      boardStatus: taskDto.boardStatus
+        ? { id: taskDto.boardStatus }
+        : undefined,
       responsibleUsers: taskDto.responsibleUsers
         ? taskDto.responsibleUsers.map((userId) => ({ id: userId }))
         : undefined,
@@ -60,15 +57,8 @@ export class TasksService {
 
     return await this.tasksRepository.findOne({
       where: { id: Number(id) },
-      select: {
-        project: {
-          id: true,
-          name: true,
-        },
-      },
       relations: {
         creator: true,
-        project: true,
         responsibleUsers: true,
       },
     })
@@ -77,7 +67,9 @@ export class TasksService {
   async findAll(queryDto: QueryTasksDto): Promise<PaginatedDto<Task>> {
     const [items, totalCount] = await this.tasksRepository.findAndCount({
       where: {
-        project: queryDto.projectId ? { id: queryDto?.projectId } : undefined,
+        boardStatus: queryDto.boardStatus
+          ? In([queryDto.boardStatus])
+          : undefined,
       },
       order: {
         id: 'ASC',
@@ -96,15 +88,8 @@ export class TasksService {
   async findOne(id: string): Promise<Task> {
     const task = await this.tasksRepository.findOne({
       where: { id: Number(id) },
-      select: {
-        project: {
-          id: true,
-          name: true,
-        },
-      },
       relations: {
         creator: true,
-        project: true,
         responsibleUsers: true,
       },
     })

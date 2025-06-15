@@ -1,16 +1,16 @@
 import { Expose, Transform, Type } from 'class-transformer'
-import { IsInt, IsNumber, IsOptional, Min } from 'class-validator'
+import { IsBoolean, IsInt, IsOptional, Min } from 'class-validator'
 
-export class QueryTasksDto {
+export class QueryBoardsDto {
   @IsOptional()
-  @IsNumber(undefined, { each: true })
-  @Transform(({ value }) =>
-    value
-      .trim()
-      .split(',')
-      .map((item: string) => item && Number(item)),
-  )
-  boardStatus?: number[]
+  @IsInt()
+  @Type(() => Number)
+  projectId?: number
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  includeStatuses?: boolean
 
   @IsOptional()
   @Type(() => Number)

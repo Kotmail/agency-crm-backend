@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -30,7 +31,10 @@ export class ProjectsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() projectDto: UpdateProjectDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() projectDto: UpdateProjectDto,
+  ) {
     return this.projectsService.update(id, projectDto)
   }
 
@@ -40,13 +44,13 @@ export class ProjectsController {
   }
 
   @Get(':id')
-  getOne(@Param('id') id: string) {
+  getOne(@Param('id', ParseIntPipe) id: number) {
     return this.projectsService.findOne(id)
   }
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  delete(@Param('id') id: string) {
+  delete(@Param('id', ParseIntPipe) id: number) {
     return this.projectsService.delete(id)
   }
 }
